@@ -1,0 +1,78 @@
+import Navbar from "@/components/Navbar"
+
+export default function Page() {
+
+    return (
+
+        <>
+            <div className="flex flex-col min-h-screen">
+
+                <Navbar />
+
+                <div className="grid grid-cols-2 p-2">
+
+                    <div className="text-3xl font-bold p-5">
+                        DRAW-OUT STOCK PROCESS
+                    </div>
+
+                    <div className="flex justify-end items-center">
+                        <div className="btn btn-active btn-accent w-40 ">All CI Pay-out</div>
+                    </div>
+
+                    <div className="card lg:card-side bg-base-100 shadow-xl mb-3">
+                        <table className="table">
+
+                        </table>
+                    </div>
+
+                </div>
+
+                <div className="card lg:card-side bg-base-100 shadow-xl">
+                    <table className="table text-center">
+
+                        <thead>
+                            <tr>
+                                <th>Part name</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>MC</th>
+                                <th>Code</th>
+                                <th>Acc</th>
+                                <th>Location</th>
+                                <th>Request</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <div className="my-3">
+                            6650 [TKANTF]
+                        </div>
+
+                        <tbody>
+
+                            <tr>
+                                <th>SPT-33-1.5-50-BU</th>
+                                <td>10</td>
+                                <td>PC</td>
+                                <td>SORTING</td>
+                                <td>BM</td>
+                                <td>64421</td>
+                                <td>I608</td>
+                                <td>14-MAY-24 11:00 AM</td>
+                                <th>
+                                    <div className="btn btn-success ">CI Pay-out</div>
+                                </th>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+        </>
+
+    )
+}
+
