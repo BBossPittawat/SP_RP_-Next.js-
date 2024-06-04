@@ -14,6 +14,7 @@ export async function POST(req) {
     }
     // ----------------------------------------------------------------------------------- check body
     const data = await req.json()
+    // console.log(data)
     if (!data.username || 
       !data.password || 
       !data.department ||

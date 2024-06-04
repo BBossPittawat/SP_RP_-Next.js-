@@ -3,7 +3,7 @@ import { SignJWT , importJWK, jwtVerify } from 'jose'
 import { cookies } from 'next/headers';
 
 export async function GET(req) {
-    
+
     try {
         // ----------------------------------------------------------------------------------- check api key
         const apiKey = req.headers.get('apikey')

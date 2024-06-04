@@ -1,6 +1,13 @@
 import { MT200conn } from '@/../../utils/mt200DB'
 import { NextResponse } from 'next/server'
 
+let cache = {
+    timestamp: 0,
+    data: [],
+};
+
+const cache_duration = 60 * 60 * 1000; // 60 min
+
 export async function GET(req) {
 
     try {
@@ -8,6 +15,12 @@ export async function GET(req) {
         const apiKey = req.headers.get('apikey')
         if (apiKey !== process.env.API_KEY) {
             return NextResponse.json({ message: 'Invalid API Key' }, { status: 401 });
+        }
+
+        // ----------------------------------------------------------------------------------- check cache time
+        const now = Date.now();
+        if (now - cache.timestamp < cache_duration && cache.data.length > 0) {
+            return NextResponse.json({ data: { departments: cache.data } });
         }
 
         // ----------------------------------------------------------------------------------- find data
@@ -24,14 +37,13 @@ export async function GET(req) {
         }
 
         const departments = query1.rows.map(row => row[0])
-        // ----------------------------------------------------------------------------------- format management
-        const jsonResponse = {
-          "data": {
-             "departments": departments
-          }
-       }
-
-       return NextResponse.json(jsonResponse)
+        // ----------------------------------------------------------------------------------- update cache data
+        cache = {
+            timestamp: Date.now(),
+            data: departments,
+         };
+  
+         return NextResponse.json({data:{departments}});
 
     } catch (error) {
         // console.error(error)

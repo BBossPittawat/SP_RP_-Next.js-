@@ -4,7 +4,8 @@ import Image from "next/image"
 import Navbar from './Navbar'
 import Footer from './Footer'
 import { useRouter } from 'next/navigation'
-import axios from 'axios';
+import { ddlDepartment } from '../../actions/ddlDepartment'
+import { validateLogin } from '../../actions/validateLogin';
 
 export default function Page() {
 
@@ -13,28 +14,10 @@ export default function Page() {
     const [password, setPassword] = useState('');
     const [department, setDepartment] = useState('');
 
-    const UsernameData = (event) => setUsername(event.target.value);
-    const PasswordData = (event) => setPassword(event.target.value);
-
     // ---------------------------------------------------------------------------------------- DDL Department request
-    const [ddlDepartments, setDdlDepartments] = useState('');
-
-    const ddlDepartmentData = async () => {
-        try {
-            const response = await axios.get('/api/v1/log_in/ddlDepartment', {
-                headers: {
-                    'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
-                },
-            });
-            const jsonData = await response.data
-            setDdlDepartments(jsonData.data.departments);
-
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
+    const [departments, setDepartments] = useState([]);
     useEffect(() => {
-        ddlDepartmentData();
+        ddlDepartment().then(setDepartments).catch(console.error);
     }, []);
     // ----------------------------------------------------------------------------------------
 
@@ -43,33 +26,50 @@ export default function Page() {
     const router = useRouter()
     const [errorMessage, setErrorMessage] = useState('');
 
-    const SubmitData = async () => {
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setSubmitLoading(true);
+
         try {
-            setSubmitLoading(true);
-            setErrorMessage('');
-            const response = await axios.post('/api/v1/log_in/validate', {
-                username,
-                password,
-                department,
-            }, {
-                headers: {
-                    'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
-                },
-            });
-
-            const data = await response.data
-            console.log(data)
+            await validateLogin(username, password, department);
             router.push('/sp-rp/items');
-
         } catch (error) {
-            const errorMessage = error.response && error.response.data && error.response.data.message
-                ? error.response.data.message
-                : 'Failed to connect to the server.';
-
+            const errorMessage = error.response.data.message ? error.response.data.message : 'Failed to connect to the server.';
+            // console.error('Failed to log in:', error);
             setErrorMessage(errorMessage);
-            setSubmitLoading(false);
         }
-    };
+
+        setSubmitLoading(false);
+    }
+
+
+    // const SubmitData = async () => {
+    //     try {
+    //         setSubmitLoading(true);
+    //         setErrorMessage('');
+    //         const response = await axios.post('/api/v1/log_in/validate', {
+    //             username,
+    //             password,
+    //             department,
+    //         }, {
+    //             headers: {
+    //                 'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
+    //             },
+    //         });
+
+    //         const data = await response.data
+    //         console.log(data)
+    //         router.push('/sp-rp/items');
+
+    //     } catch (error) {
+    //         const errorMessage = error.response && error.response.data && error.response.data.message
+    //             ? error.response.data.message
+    //             : 'Failed to connect to the server.';
+
+    //         setErrorMessage(errorMessage);
+    //         setSubmitLoading(false);
+    //     }
+    // };
     // ----------------------------------------------------------------------------------------
 
     return (
@@ -96,22 +96,49 @@ export default function Page() {
                             <div className="text-5xl font-bold text-white">LOG IN</div>
 
                             <input
+                                className="input input-bordered w-10/12 mt-10"
+                                type="number" placeholder="username : ex.90701" value={username}
+                                onChange={(e) => setUsername(e.target.value)} disabled={SubmitLoading} />
+
+                            <input
+                                className="input input-bordered w-10/12 mt-10"
+                                type="password" placeholder="password : personal ID" value={password}
+                                onChange={(e) => setPassword(e.target.value)} disabled={SubmitLoading} />
+
+                            <select
+                                className="select select-bordered w-10/12 mt-10"
+                                value={department} onChange={(e) => setDepartment(e.target.value)}
+                                disabled={SubmitLoading}>
+                                <option value="">Select Department</option>
+                                {departments.map(dep => (<option key={dep} value={dep}>{dep}</option>))}
+                            </select>
+
+                            {/* <input
                                 type="number"
                                 placeholder="username : ex.90701"
                                 className="input input-bordered w-10/12 mt-10"
                                 value={username}
                                 onChange={UsernameData}
-                            />
+                            /> */}
 
-                            <input
+                            {/* <input
                                 type="password"
                                 placeholder="password : personal ID"
                                 className="input input-bordered w-10/12 mt-10"
                                 value={password}
                                 onChange={PasswordData}
-                            />
-
+                            /> */}
+                            {/* 
                             <select
+                                className="select select-bordered w-10/12 mt-10"
+                                value={department} onChange={e => setDepartment(e.target.value)}>
+                                <option value="">Select Department</option>
+                                {departments.map(dep => (
+                                    <option key={dep} value={dep}>{dep}</option>
+                                ))}
+                            </select> */}
+
+                            {/* <select
                                 className="select select-bordered w-10/12 mt-10"
                                 value={department} onChange={(e) => setDepartment(e.target.value)}
                             >
@@ -121,24 +148,29 @@ export default function Page() {
                                         <option key={dep} value={dep}>{dep}</option>
                                     ))
                                 }
-                            </select>
+                            </select> */}
 
                             {!SubmitLoading ? (
-                                <button
-                                    className="btn btn-warning mt-10 w-10/12 text-gray-500 text-3xl font-bold"
-                                    onClick={SubmitData}
-                                >
-                                    SUBMIT
-                                </button>
+                                <>
+
+                                    <button
+                                        className="btn btn-warning mt-10 w-10/12 text-gray-500 text-3xl font-bold"
+                                        onClick={handleSubmit}
+                                    >
+                                        SUBMIT
+                                    </button>
+
+                                    {errorMessage && (
+                                        <p className='text-red-500 mt-2'>Error : {errorMessage}</p>
+                                    )}
+                                </>
                             ) : (
                                 <button className="mt-10 w-10/12 text-gray-500 text-3xl font-bold">
                                     <span className="loading loading-spinner"></span> LOADING...
                                 </button>
                             )}
 
-                            {errorMessage && (
-                                <p className='text-red-500 mt-2'>Error : {errorMessage}</p>
-                            )}
+
 
                         </div>
 

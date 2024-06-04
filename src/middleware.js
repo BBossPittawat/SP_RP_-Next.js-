@@ -5,26 +5,24 @@ export async function middleware(req) {
 
     const url = req.nextUrl.clone();
     const pathname = url.pathname;
-    
-    try {
-        const token = cookies().get('token').value
+    const token = req.cookies.get('token');
 
-        if (!token && pathname !== '/sp-rp') {
-            throw new Error('invalid token')
-        }
+    const tokenValue = token ? token.value : '';
 
-        if (token && pathname === '/sp-rp') {
+    // console.log(tokenValue);
+
+    if (pathname === '/sp-rp') {
+        if (tokenValue !== '') {
             return NextResponse.redirect(new URL('/sp-rp/items', req.url));
         }
 
-        return NextResponse.next();
-
-    } catch (error) {
-        console.log("error", error);
-        response.cookies.set('token', '');
-        const response = NextResponse.redirect(new URL('/sp-rp', req.url));
-        return response;        
+    } else {
+        if (tokenValue === '' ) {
+            return NextResponse.redirect(new URL('/sp-rp', req.url));
+        }
     }
+
+    return NextResponse.next();
 }
 
 export const config = {

@@ -27,7 +27,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/middleware.js", "utils/mt200DB.js", "utils/mteDB.js", "src/app/api/v1/items/decode/route.js", "src/app/api/v1/log_in/ddlDepartment/route.js", "src/app/api/v1/log_in/validate/route.js", "src/app/api/v1/items/logout/route.js", "src/app/api/v1/items/sidebar_menu/route.js"  ],
+, "src/middleware.js", "utils/mt200DB.js", "utils/mteDB.js", "src/app/api/v1/items/decode/route.js", "src/app/api/v1/log_in/ddlDepartment/route.js", "src/app/api/v1/log_in/validate/route.js", "src/app/api/v1/items/logout/route.js", "src/app/api/v1/items/sidebar/product/route.js"  ],
   "exclude": [
     "node_modules"
   ]

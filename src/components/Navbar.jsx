@@ -58,7 +58,6 @@ export default function Navbar() {
 
     // ----------------------------------------------------------------------------------------
 
-
     return (
         <nav>
             <div className="navbar py-1 bg-blue-400 text-black flex justify-between items-center pr-5">
