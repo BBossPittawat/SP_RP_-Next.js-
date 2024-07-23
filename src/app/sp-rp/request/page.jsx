@@ -1,141 +1,135 @@
-'use client';
-import { useEffect, useState } from 'react';
-import Image from "next/image"
-import Navbar from "@/../../src/components/Navbar"
+'use client'
+import { useEffect, useState } from 'react'
+import { Spin, Alert, Modal, Image } from 'antd'
+import Marquee from 'react-fast-marquee';
+import Navbar from '@/components/Navbar'
+import Req_mn from './Req_mn'
+import Req_norm from './Req_norm'
+import Req_other_dept from './Req_other_dept'
+import useStore from '@/lib/store'
 
+const { confirm } = Modal
 
 export default function Page() {
 
-  const rows = [
+  const [id, setId] = useState(null)
 
-    {
-      partNo: 'RASPBERRY-PI-4B-4G',
-      spec: 'Raspberry Pi 4 Model B 4GB',
-      priceTHB: 1564,
-      unit: 'PC',
-      product: 'SA',
-      machine: 'SWAPPING',
-      location: 'A172',
-      stock: 20
-    },
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search)
+      setId(searchParams.get('id'))
+    }
+  }, [])
 
-  ];
+  const { data_10, loading_10, error_10, fetchData_10 } = useStore()
+  const {
+    data_4,
+    // loading_4,
+    // error_4,
+    fetchData_4
+  } = useStore()
+
+  useEffect(() => {
+    if (id) fetchData_10(id)
+    fetchData_4()
+  }, [id, fetchData_10, fetchData_4])
+
+  if (loading_10) return (
+    <div className="flex justify-center items-center h-screen">
+      <Spin size="large" />
+    </div>
+  )
+
+  if (error_10) return <Alert message="Error" description={error_10} type="error" showIcon />
+
+  const tableRows = [
+    { label: "Part no.", value: data_10[0].PART_NO },
+    { label: "Spec", value: data_10[0].SPEC },
+    { label: "Price", value: `${data_10[0].PRICE} ${data_10[0].CURR}` },
+    { label: "Unit", value: data_10[0].UNIT },
+    { label: "Product", value: data_10[0].PD },
+    { label: "Machine", value: data_10[0].MC_NAME },
+    { label: "Location", value: data_10[0].LOCATION },
+    { label: "Stock", value: data_10[0].STOCK }
+  ]
+
+  const part_section = parseInt(data_10[0]?.DEPT?.substring(2, 3))
+  const log_in_section = parseInt(data_4?.payload?.section?.substring(2, 3))
+  const section = parseInt(data_4?.payload?.section?.substring(3, 4))
 
   return (
-
     <>
       <Navbar />
 
-      <div className="card lg:card-side bg-base-100 shadow-xl m-10">
+      <div className="card lg:card-side bg-base-100 shadow-xl m-10 pl-2">
+
         <figure>
-          <Image src="/Image/K113.JPG" alt="icon" width={500} height={500} />
+          <Image
+            className='border border-gray-500 rounded-3xl'
+            src={data_10[0].IMG_URL || "/Image/no_img.jpg"}
+            alt="Part Image"
+            width={650}
+            height={500}
+          />
         </figure>
+
         <div className="card-body">
           <table className="table text-base">
             <tbody>
+              {tableRows.map((row, index) => {
+                let rowClass = ""
+                if (index === 0) rowClass = "bg-yellow-400 border-y-4 border-gray-500"
+                else if (index === tableRows.length - 1) rowClass = "border-b-4 border-gray-500"
+                else if (index % 2 === 0) rowClass = "bg-yellow-400"
 
-              <tr className="bg-yellow-400 border-y-4 border-gray-500">
-                <th>Part no.</th>
-                <td>RASPBERRY-PI-4B-4G</td>
-              </tr>
-
-              <tr>
-                <th>Spec</th>
-                <td>Raspberry Pi 4 Model B 4GB</td>
-              </tr>
-
-              <tr className="bg-yellow-400">
-                <th>Price</th>
-                <td>1,564</td>
-              </tr>
-
-              <tr>
-                <th>Unit</th>
-                <td>PC</td>
-              </tr>
-
-              <tr className="bg-yellow-400">
-                <th>Product</th>
-                <td>SA</td>
-              </tr>
-
-              <tr>
-                <th>Machine</th>
-                <td>SWAPPING</td>
-              </tr>
-
-              <tr className="bg-yellow-400">
-                <th>Location</th>
-                <td>A172</td>
-              </tr>
-
-              <tr className="border-b-4 border-gray-500">
-                <th>Stock</th>
-                <td>30</td>
-              </tr>
-
+                return (
+                  <tr key={index} className={rowClass}>
+                    <th>{row.label}</th>
+                    <td>{row.value}</td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
+
+          {data_10[0].REMARK &&
+            <Alert
+              banner
+              message={
+                <Marquee pauseOnHover gradient={false} style={{ fontSize: '18px' }}>
+                  ADMIN Message :  {data_10[0].REMARK}
+                </Marquee>
+              }
+            />
+          }
+
+          {data_10[0].STOCK !== 0 ? (
+            <button className="btn btn-neutral" onClick={() =>
+              document.getElementById('my_modal').showModal()}>
+              เบิกพาร์ท [ Request ]
+            </button>
+          ) : (
+            <button className="btn btn-outline btn-error"> NO STOCK [ หมดจ้า ]</button>
+          )}
+
         </div>
       </div>
 
-      <div className="flex justify-center items-center pb-10">
-        <div className="card lg:card-side w-1/2 bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title mb-2">REQUEST [ ร้องขอ ]</h2>
-            {/* <h2 className="card-title mb-2">[ M/N format ]</h2> */}
-
-            <select className="select select-bordered w-full">
-              <option disabled selected>Product ที่จะนำไปใช้ ?</option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-
-            <select className="select select-bordered w-full">
-              <option disabled selected>Machine [ นำไปใช้กับเครื่องจักรไหน ? ]</option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-
-            <select className="select select-bordered w-full">
-              <option disabled selected>M/N Code ?</option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-
-            <select className="select select-bordered w-full">
-              <option disabled selected>CCC ?</option>
-              <option>Han Solo</option>
-              <option>Greedo</option>
-            </select>
-
-            <input type="text"
-              placeholder="ACC no."
-              className="input input-bordered" disabled
-            />
-
-            <input type="text"
-              placeholder="Budget no."
-              className="input input-bordered" disabled
-            />
-
-            <input type="number"
-              placeholder="Amount [ จำนวนที่ต้องการเบิก ]"
-              className="input input-bordered input-warning " />
-
-            <input type="text"
-              placeholder="Remark [ หมายเหตุ ]"
-              className="input input-bordered input-warning " />
-
-            <div className="card-actions justify-end mt-2">
-              <button className="btn btn-primary">SUBMIT [ส่ง]</button>
-            </div>
-          </div>
+      <dialog id="my_modal" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">REQUEST [ ร้องขอ ]</h3>
+          {
+            part_section === log_in_section
+              ? section === 4
+                ? <Req_mn data={data_10} fetchData_10={fetchData_10} />
+                : <Req_norm data={data_10} fetchData_10={fetchData_10} />
+              : part_section !== log_in_section
+                ? <Req_other_dept data={data_10} fetchData_10={fetchData_10} />
+                : null
+          }
         </div>
-      </div>
+      </dialog>
 
     </>
-
   )
-
 }

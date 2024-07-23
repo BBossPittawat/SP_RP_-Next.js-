@@ -4,73 +4,44 @@ import Image from "next/image"
 import Navbar from './Navbar'
 import Footer from './Footer'
 import { useRouter } from 'next/navigation'
-import { ddlDepartment } from '../../actions/ddlDepartment'
-import { validateLogin } from '../../actions/validateLogin';
+import { validateLogin } from '@/actions/validateLogin'
+import { Select, Skeleton, Alert, Spin } from 'antd'
+import useStore from '@/lib/store'
+
+const { Option } = Select
 
 export default function Page() {
 
-
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [department, setDepartment] = useState('');
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [department, setDepartment] = useState('')
 
     // ---------------------------------------------------------------------------------------- DDL Department request
-    const [departments, setDepartments] = useState([]);
+    const { data_2, loading_2, error_2, fetchData_2 } = useStore()
+
     useEffect(() => {
-        ddlDepartment().then(setDepartments).catch(console.error);
-    }, []);
-    // ----------------------------------------------------------------------------------------
+        fetchData_2()
+    }, [fetchData_2])
 
     // ---------------------------------------------------------------------------------------- Submit button request
-    const [SubmitLoading, setSubmitLoading] = useState(false);
+    const [SubmitLoading, setSubmitLoading] = useState(false)
     const router = useRouter()
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('')
 
     async function handleSubmit(e) {
-        e.preventDefault();
-        setSubmitLoading(true);
+        e.preventDefault()
+        setSubmitLoading(true)
 
         try {
-            await validateLogin(username, password, department);
-            router.push('/sp-rp/items');
+            await validateLogin(username, password, department)
+            router.push('/sp-rp/items')
         } catch (error) {
-            const errorMessage = error.response.data.message ? error.response.data.message : 'Failed to connect to the server.';
-            // console.error('Failed to log in:', error);
-            setErrorMessage(errorMessage);
+            const errorMessage = error.response.data.message ? error.response.data.message : 'Failed to connect to the server.'
+            setErrorMessage(errorMessage)
         }
 
-        setSubmitLoading(false);
+        setSubmitLoading(false)
     }
-
-
-    // const SubmitData = async () => {
-    //     try {
-    //         setSubmitLoading(true);
-    //         setErrorMessage('');
-    //         const response = await axios.post('/api/v1/log_in/validate', {
-    //             username,
-    //             password,
-    //             department,
-    //         }, {
-    //             headers: {
-    //                 'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
-    //             },
-    //         });
-
-    //         const data = await response.data
-    //         console.log(data)
-    //         router.push('/sp-rp/items');
-
-    //     } catch (error) {
-    //         const errorMessage = error.response && error.response.data && error.response.data.message
-    //             ? error.response.data.message
-    //             : 'Failed to connect to the server.';
-
-    //         setErrorMessage(errorMessage);
-    //         setSubmitLoading(false);
-    //     }
-    // };
-    // ----------------------------------------------------------------------------------------
 
     return (
 
@@ -93,84 +64,62 @@ export default function Page() {
 
                         <div className="w-8/12 h-full bg-blue-300 rounded-3xl drop-shadow-2xl flex flex-col items-center justify-center py-10">
 
-                            <div className="text-5xl font-bold text-white">LOG IN</div>
-
-                            <input
-                                className="input input-bordered w-10/12 mt-10"
-                                type="number" placeholder="username : ex.90701" value={username}
-                                onChange={(e) => setUsername(e.target.value)} disabled={SubmitLoading} />
-
-                            <input
-                                className="input input-bordered w-10/12 mt-10"
-                                type="password" placeholder="password : personal ID" value={password}
-                                onChange={(e) => setPassword(e.target.value)} disabled={SubmitLoading} />
-
-                            <select
-                                className="select select-bordered w-10/12 mt-10"
-                                value={department} onChange={(e) => setDepartment(e.target.value)}
-                                disabled={SubmitLoading}>
-                                <option value="">Select Department</option>
-                                {departments.map(dep => (<option key={dep} value={dep}>{dep}</option>))}
-                            </select>
-
-                            {/* <input
-                                type="number"
-                                placeholder="username : ex.90701"
-                                className="input input-bordered w-10/12 mt-10"
-                                value={username}
-                                onChange={UsernameData}
-                            /> */}
-
-                            {/* <input
-                                type="password"
-                                placeholder="password : personal ID"
-                                className="input input-bordered w-10/12 mt-10"
-                                value={password}
-                                onChange={PasswordData}
-                            /> */}
-                            {/* 
-                            <select
-                                className="select select-bordered w-10/12 mt-10"
-                                value={department} onChange={e => setDepartment(e.target.value)}>
-                                <option value="">Select Department</option>
-                                {departments.map(dep => (
-                                    <option key={dep} value={dep}>{dep}</option>
-                                ))}
-                            </select> */}
-
-                            {/* <select
-                                className="select select-bordered w-10/12 mt-10"
-                                value={department} onChange={(e) => setDepartment(e.target.value)}
-                            >
-                                <option disabled value="">Spare part department</option>
-                                {
-                                    ddlDepartments && ddlDepartments.map((dep) => (
-                                        <option key={dep} value={dep}>{dep}</option>
-                                    ))
-                                }
-                            </select> */}
-
-                            {!SubmitLoading ? (
-                                <>
-
-                                    <button
-                                        className="btn btn-warning mt-10 w-10/12 text-gray-500 text-3xl font-bold"
-                                        onClick={handleSubmit}
-                                    >
-                                        SUBMIT
-                                    </button>
-
-                                    {errorMessage && (
-                                        <p className='text-red-500 mt-2'>Error : {errorMessage}</p>
-                                    )}
-                                </>
+                            {loading_2 ? (
+                                <Spin size="large" />
                             ) : (
-                                <button className="mt-10 w-10/12 text-gray-500 text-3xl font-bold">
-                                    <span className="loading loading-spinner"></span> LOADING...
-                                </button>
+                                <>
+                                    <div className="text-5xl font-bold text-white">LOG IN</div>
+
+                                    <input
+                                        className="input input-bordered w-10/12 mt-10"
+                                        type="number" placeholder="username : ex.90701" value={username}
+                                        onChange={(e) => setUsername(e.target.value)} disabled={SubmitLoading} />
+
+                                    <input
+                                        className="input input-bordered w-10/12 mt-10"
+                                        type="password" placeholder="password : personal ID" value={password}
+                                        onChange={(e) => setPassword(e.target.value)} disabled={SubmitLoading} />
+
+                                    <Select
+                                        className="mt-10"
+                                        style={{ width: '83%', height: '10%' }}
+                                        placeholder="Select a Department"
+                                        // value={department}
+                                        onChange={(value) => setDepartment(value)}
+                                        disabled={SubmitLoading}
+                                    >
+                                        {data_2?.map((dep) => (
+                                            <Option
+                                                key={dep}
+                                                value={dep}>{dep}
+                                            </Option>
+                                        ))}
+                                    </Select>
+
+
+                                    {!SubmitLoading ? (
+                                        <>
+
+                                            <button
+                                                className="btn btn-warning mt-10 w-10/12 text-gray-500 text-3xl font-bold"
+                                                onClick={handleSubmit}
+                                            >
+                                                SUBMIT
+                                            </button>
+
+                                            {errorMessage && (
+                                                <p className='text-red-500 mt-2'>Error : {errorMessage}</p>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <button className="mt-10 w-10/12 text-gray-500 text-3xl font-bold">
+                                            <span className="loading loading-spinner"></span> LOADING...
+                                        </button>
+                                    )}
+
+                                </>
+
                             )}
-
-
 
                         </div>
 

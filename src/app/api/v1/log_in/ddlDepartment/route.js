@@ -1,5 +1,7 @@
-import { MT200conn } from '@/../../utils/mt200DB'
+import { MT200conn } from '@/../utils/mt200DB'
 import { NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 
 let cache = {
     timestamp: 0,
@@ -43,7 +45,7 @@ export async function GET(req) {
             data: departments,
          };
   
-         return NextResponse.json({data:{departments}});
+        return NextResponse.json({data:{departments}});
 
     } catch (error) {
         // console.error(error)

@@ -7,10 +7,10 @@ export const validateLogin = async (username, password, department) => {
             { headers: {
                 'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
             }, }
-        );
-        return response.data;
+        )
+        return response.data
     } catch (error) {
-        console.error('Validate Login Error:', error);
-        throw error;
+        console.error('Error:', error)
+        throw error
     }
-};
+}

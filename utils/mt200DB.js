@@ -10,7 +10,7 @@ const dbConfig = {
 
 export async function MT200conn() {
     let connection;
-    
+
     try {
         connection = await oracledb.getConnection(dbConfig);
         return connection;
@@ -18,9 +18,9 @@ export async function MT200conn() {
         console.error(err);
         throw err;
     } finally {
-        if(connection){
+        if (connection) {
             // console.log("connection closed")
-           await connection.close
+            await connection.close
         }
     }
 }

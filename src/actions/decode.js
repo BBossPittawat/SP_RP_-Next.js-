@@ -6,10 +6,10 @@ export const decode = async () => {
             headers: {
                 'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
             },
-        });
-        return response.data;
+        })
+        return response.data
     } catch (error) {
-        console.error('Fetch Departments Error:', error);
-        throw error;
+        console.error('Error:', error)
+        throw error
     }
-};
+}

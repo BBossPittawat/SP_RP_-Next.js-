@@ -1,197 +1,212 @@
+'use client'
+import React, { useEffect, useState } from 'react'
+import { Checkbox, Alert, Select, Spin, Button } from 'antd'
+import useStore from '@/lib/store'
 
-'use client';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ddlDepartment } from '../../../actions/ddlDepartment'
+export default function Sidebar({ onSearch }) {
 
-export default function sidebar() {
+    const [checkedList, setCheckedList] = useState([])
+    const [checkAll, setCheckAll] = useState(false)
+    const [selectedDepartment, setSelectedDepartment] = useState('')
+    const [selectedProduct, setSelectedProduct] = useState('')
+    const [selectedMachine, setSelectedMachine] = useState('')
 
-    // ---------------------------------------------------------------------------------------- DDL Department request
-    const [departments, setDepartments] = useState([]);
+    const {
+        data_1: groupsData,
+        // loading_1: loadingGroups,
+        error_1: errorGroups,
+        fetchData_1: fetchGroups,
+        data_2: departments,
+        fetchData_2: fetchDepartments,
+        loading_2: loadingDepartments,
+        data_3: productsData,
+        loading_3: loadingProducts,
+        fetchData_3: fetchProducts,
+        data_4: jwtData,
+        fetchData_4: fetchJWT,
+        data_5: machinesData,
+        loading_5: loadingMachines,
+        error_5: errorMachines,
+        fetchData_5: fetchMachines
+    } = useStore()
+
     useEffect(() => {
-        ddlDepartment().then(setDepartments).catch(console.error);
-    }, []);
-    // ---------------------------------------------------------------------------------------- Product request
+        fetchJWT()
+    }, [fetchJWT])
 
+    useEffect(() => {
+        if (jwtData?.payload?.department) {
+            setSelectedDepartment(jwtData.payload.department)
+            fetchDepartments()
+            fetchProducts(jwtData.payload.department)
+            fetchGroups()
+            fetchMachines(jwtData.payload.department, '')
+        }
+    }, [jwtData, fetchDepartments, fetchProducts, fetchGroups, fetchMachines])
 
+    useEffect(() => {
+        if (groupsData?.length > 0) {
+            const allGroupIds = groupsData.map(item => item.id)
+            setCheckedList(allGroupIds)
+            setCheckAll(true)
+        }
+    }, [groupsData])
 
+    //-------------------------------------------------------------------------------------------------  Change trigger
 
+    const onDepartmentChange = (department) => {
+        setSelectedDepartment(department)
+        setSelectedProduct('')
+        setSelectedMachine('')
+        fetchProducts(department)
+        fetchMachines(department, '')
+    }
 
-    // const [ddlDepartments, setDdlDepartments] = useState('');
+    const onProductChange = (product) => {
+        setSelectedProduct(product)
+        setSelectedMachine('')
+        fetchMachines(selectedDepartment, product)
+    }
 
-    // const ddlDepartmentData = async () => {
-    //     try {
-    //         const response = await axios.get('/api/v1/log_in/ddlDepartment', {
-    //             headers: {
-    //                 'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
-    //             },
-    //         });
-    //         const jsonData = await response.data
-    //         setDdlDepartments(jsonData.data.departments);
+    const onMachineChange = (machine) => {
+        setSelectedMachine(machine)
+    }
 
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //     }
-    // }
+    const onChange = (list) => {
+        setCheckedList(list)
+        setCheckAll(list.length === groupsData.length)
+    }
 
-    // -------------------------------------------- --------------------------------------------
+    const onCheckAllChange = (e) => {
+        const checkedList = e.target.checked ? groupsData.map(item => item.id) : []
+        setCheckedList(checkedList)
+        setCheckAll(e.target.checked)
+    }
 
-    // useEffect(() => {
-    //     ddlDepartmentData();
-    // }, []);
+    const handleSearchClick = () => {
+        // console.log("department:", selectedDepartment)
+        // console.log("product:", selectedProduct)
+        // console.log("machine:", selectedMachine)
+        // console.log("group:", checkedList)
+        onSearch({
+            department: selectedDepartment,
+            product: selectedProduct,
+            machine: selectedMachine,
+            group: checkedList
+        })
+        // console.log(onSearch)
+    }
+
+    if (errorGroups) return <Alert message="Error" description={errorGroups} type="error" showIcon />
 
     return (
-        <>
-            <div className="drawer drawer-open basis-40 ">
-                <input id="sidebar" type="checkbox" className="drawer-toggle" />
-                <div className="drawer-side bg-blue-100">
-                    <label htmlFor="sidebar" className="drawer-overlay"></label>
-                    <ul className="menu p-4 w-48">
+        <div className="drawer drawer-open basis-40">
+            <input id="sidebar" type="checkbox" className="drawer-toggle" />
+            <div className="drawer-side bg-blue-100">
+                <label htmlFor="sidebar" className="drawer-overlay"></label>
+                <ul className="menu p-4 w-48">
 
-                        <select
-                            className="select select-sm bg-blue-400 text-center font-bold text-white"
-                            value={departments} onChange={(e) => setDepartments(e.target.value)}
+                    {/* Department Select */}
+                    <span className='text-xs font-bold text-gray-900 mt-4'>DEPARTMENT</span>
+                    {loadingDepartments ? (
+                        <>
+                            <Spin size="large" />
+                        </>
+                    ) : (
+                        <>
+                            <Select
+                                showSearch
+                                placeholder="Select a department"
+                                value={selectedDepartment}
+                                onChange={onDepartmentChange}
+                                options={departments?.map(dep => ({ value: dep, label: dep }))}
+                                className="text-center mt-2"
+                            />
+                        </>
+                    )}
+
+                    {/* Product Section */}
+                    <span className='text-xs font-bold text-gray-900 mt-4'>PRODUCT</span>
+                    {loadingProducts ? (
+                        <>
+                            <Spin size="large" />
+                        </>
+                    ) : (
+                        <>
+                            <Select
+                                showSearch
+                                placeholder="Select a product"
+                                value={selectedProduct}
+                                onChange={onProductChange}
+                                options={productsData?.map(prod => ({ value: prod.id, label: prod.product }))}
+                                className="text-center mt-2"
+                            />
+                        </>
+                    )}
+
+                    {/* Machine Section */}
+                    <span className='text-xs font-bold text-gray-900 mt-4'>PROCESS</span>
+                    {loadingMachines ? (
+                        <>
+                            <Spin size="large" />
+                        </>
+                    ) : (
+                        <>
+                            <Select
+                                showSearch
+                                placeholder="Select a machine"
+                                value={selectedMachine}
+                                onChange={onMachineChange}
+                                options={
+                                    errorMachines || !machinesData || machinesData.length === 0
+                                        ? [{ value: 'no_data', label: 'No Data' }]
+                                        : machinesData.map(machine => ({ value: machine.id, label: machine.machine }))
+                                }
+                                className="text-center mt-2"
+                            />
+                        </>
+                    )}
+
+                    {/* Group Section */}
+                    <div className='mt-4'>
+
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <span className='font-bold text-gray-900'>หมวดหมู่</span>
+                            <Checkbox
+                                onChange={onCheckAllChange}
+                                checked={checkAll}
+                                style={{ marginLeft: '8px' }}
+                            />
+                        </div>
+
+                        <Checkbox.Group
+                            value={checkedList}
+                            onChange={onChange}
+                            className='mt-1'
                         >
-                            {
-                                departments && departments.map((dep) => (
-                                    <option key={dep} value={dep}>{dep}</option>
-                                ))
-                            }
-                        </select>
+                            {groupsData?.map(item => (
+                                <div key={item.id}>
+                                    <Checkbox value={item.id} className='mt-1'>
+                                        {item.thai_name}<br />{item.eng_name}
+                                    </Checkbox>
+                                </div>
+                            ))}
+                        </Checkbox.Group>
+                    </div>
 
-                        {/* <select
-                            className="select select-sm bg-blue-400 text-center font-bold text-white"
-                            value={department} onChange={(e) => setDepartment(e.target.value)}
-                        >
-                            {
-                                ddlDepartments && ddlDepartments.map((dep) => (
-                                    <option key={dep} value={dep}>{dep}</option>
-                                ))
-                            }
-                        </select> */}
+                    <button
+                        className="btn btn-sm btn-primary mt-3"
+                        onClick={handleSearchClick}>
+                        SEARCH
+                    </button>
 
-                        <span className="text-xs font-bold text-gray-500 mt-3">PRODUCT</span>
+                    {/* <button className="btn btn-primary">
+                        <span className="loading loading-spinner"></span>
+                        loading
+                    </button> */}
 
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">CILANT</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">GB</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">SA</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">SA-10</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">SA-X27</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">SA3D11CT</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">SA3M08</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">STA</span>
-                        </label>
-
-                        <span className="text-xs font-bold text-gray-500 mt-3">GROUP [ หมวดหมู่ ]</span>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning mt-1 mr-2" />
-                            <div className="flex flex-col items-start ml-2">
-                                <span className="label-text">Machanical</span>
-                                <span className="label-text text-gray-500 text-xs">[อะไหล่ทางกล]</span>
-                            </div>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning mt-1 mr-2" />
-                            <div className="flex flex-col items-start ml-2">
-                                <span className="label-text">Electrical</span>
-                                <span className="label-text text-gray-500 text-xs">[อะไหล่ทางไฟฟ้า]</span>
-                            </div>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning mt-1 mr-2" />
-                            <div className="flex flex-col items-start ml-2">
-                                <span className="label-text">Pneumatic</span>
-                                <span className="label-text text-gray-500 text-xs">[อะไหล่ระบบลม]</span>
-                            </div>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning mt-1 mr-2" />
-                            <div className="flex flex-col items-start ml-2">
-                                <span className="label-text">Hydrolic</span>
-                                <span className="label-text text-gray-500 text-xs">[อะไหล่ระบบไฮดรอลิค]</span>
-                            </div>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning mt-1 mr-2" />
-                            <div className="flex flex-col items-start ml-2">
-                                <span className="label-text">Chemical</span>
-                                <span className="label-text text-gray-500 text-xs">[สารเคมี]</span>
-                            </div>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning mt-1 mr-2" />
-                            <div className="flex flex-col items-start ml-2">
-                                <span className="label-text">Making parts</span>
-                                <span className="label-text text-gray-500 text-xs">[งานสั่งทำ]</span>
-                            </div>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning mt-1 mr-2" />
-                            <div className="flex flex-col items-start ml-2">
-                                <span className="label-text">Other</span>
-                                <span className="label-text text-gray-500 text-xs">[อื่นๆ]</span>
-                            </div>
-                        </label>
-
-                        <span className="text-xs font-bold text-gray-500 mt-3">MACHINE [ เครื่องจักร ]</span>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">CORE ASSEMBLY</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">CORE SEPARATING</span>
-                        </label>
-
-                        <label className="flex items-center mt-2">
-                            <input type="checkbox" name="product" className="checkbox checkbox-sm checkbox-warning" />
-                            <span className="label-text mx-2">WINDING</span>
-                        </label>
-
-                    </ul>
-
-                </div>
-            </div >
-        </>
+                </ul>
+            </div>
+        </div>
     )
-
 }

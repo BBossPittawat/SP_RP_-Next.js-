@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server'
-import { mteDBconn } from '@/../../utils/mteDB'
-import { MT200conn } from '@/../../utils/mt200DB'
+import { mteDBconn } from '@/../utils/mteDB'
+import { MT200conn } from '@/../utils/mt200DB'
 import { SignJWT , importJWK } from 'jose'
 import { cookies } from 'next/headers'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req) {
 
@@ -32,7 +34,8 @@ export async function POST(req) {
     const query1 = await conn1.execute(
     `
     SELECT EMPCODE,
-    SUBSTR(EMPNAME_ENG, 1, INSTR(EMPNAME_ENG || ' ', ' ') - 1) AS FIRSTNAME 
+    SUBSTR(EMPNAME_ENG, 1, INSTR(EMPNAME_ENG || ' ', ' ') - 1) AS FIRSTNAME,
+    SECTION
     FROM EMPLOYEE_DATA
     WHERE EMPCODE = :username
     AND PERSONAL_ID = :password
@@ -46,6 +49,7 @@ export async function POST(req) {
     }
     const emp_code = query1.rows[0][0]
     const name = query1.rows[0][1]
+    const section = query1.rows[0][2]
 
     // ----------------------------------------------------------------------------------- check user status
     const conn2 = await MT200conn()
@@ -61,6 +65,7 @@ export async function POST(req) {
     let JsonUserDetail = {
       "emp_code": emp_code,
       "department" : data.department,
+      "section" : section,
       "name" : name,
       "status": "USER"
     }
@@ -79,7 +84,7 @@ export async function POST(req) {
     const token = await new SignJWT(JsonUserDetail)
                   .setProtectedHeader({ alg: 'HS256' })
                   .setIssuedAt()
-                  .setExpirationTime('1h')
+                  .setExpirationTime('8h')
                   .sign(secrectKey)
 
     cookies().set('token',token)
