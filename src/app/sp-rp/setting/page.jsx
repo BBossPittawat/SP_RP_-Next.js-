@@ -7,9 +7,11 @@ import { MonitorOutlined } from '@ant-design/icons'
 
 import Ci_payout from './Ci_payout'
 import Admin from './Admin'
-import Spare_part from './Spare_part_v1'
+// import Spare_part from './Spare_part_v1'
 import Budget from './Budget'
 import Machine from './Machine'
+
+import Spare_part_v2 from './Spare_part_v2'
 
 export default function Page() {
 
@@ -71,7 +73,8 @@ export default function Page() {
                                     { key: '1', label: 'CI Payout' },
                                     { key: '4', label: 'Expense budget' },
                                     { key: '5', label: 'Machine' },
-                                    { key: '3', label: 'Spare Part' },
+                                    // { key: '3', label: 'Spare Part' },
+                                    { key: '6', label: 'Spare Part' },
                                 ]}
                                 style={{ backgroundColor: 'transparent', borderRightColor: 'transparent' }}
                             />
@@ -83,9 +86,10 @@ export default function Page() {
                 <div className='basis-full p-3'>
                     {selectedMenu === '1' && <Ci_payout department={Department} />}
                     {selectedMenu === '2' && <Admin department={Department} />}
-                    {selectedMenu === '3' && <Spare_part department={Department} />}
+                    {/* {selectedMenu === '3' && <Spare_part department={Department} />} */}
                     {selectedMenu === '4' && <Budget department={Department} />}
                     {selectedMenu === '5' && <Machine department={Department} />}
+                    {selectedMenu === '6' && <Spare_part_v2 department={Department} />}
                 </div>
             </div>
         </>

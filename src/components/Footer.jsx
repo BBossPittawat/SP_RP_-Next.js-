@@ -4,7 +4,7 @@ export default function Footer() {
 
       <footer className="footer footer-center p-4 text-gray-500">
         <aside>
-          <p>MT200 DX TEAM V.1.0.0</p>
+          <p>MT200 DX TEAM V.1.0.2</p>
         </aside>
       </footer>
 

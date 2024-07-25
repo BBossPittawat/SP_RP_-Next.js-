@@ -5,6 +5,8 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(req) {
   try {
+
+    let baseUrl
     //---------------------------------------------------------------------------------- Check API key
     const apiKey = req.headers.get('apikey')
     if (apiKey !== process.env.API_KEY) {
@@ -59,6 +61,13 @@ export async function POST(req) {
       return new Response('ไม่พบข้อมูลในระบบ', { status: 400 })
     }
 
+    if (process.env.NODE_ENV === 'production') {
+      baseUrl = 'http://mt200svr:8078'
+    }
+    else {
+      baseUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}`
+    }
+
     const result = query1.rows.map(row => ({
       ROWID: row[0],
       ID: row[12],
@@ -71,7 +80,7 @@ export async function POST(req) {
       MC_NAME: row[8],
       LOCATION: row[9],
       STOCK: row[10],
-      IMG_URL: row[1] ? `${req.nextUrl.origin}/api/v1/items/sidebar/image?partNo=${row[0]}` : null,
+      IMG_URL: row[1] ? `${baseUrl}/api/v1/items/sidebar/image?partNo=${row[0]}` : null,
       DEPT: row[11],
       REMARK: row[13],
     }))

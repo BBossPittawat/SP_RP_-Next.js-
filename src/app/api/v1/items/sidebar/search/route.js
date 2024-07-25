@@ -6,6 +6,8 @@ export const dynamic = 'force-dynamic'
 export async function POST(req) {
 
     try {
+
+        let baseUrl
         // ----------------------------------------------------------------------------------- check api key
         const apiKey = req.headers.get('apikey')
         if (apiKey !== process.env.API_KEY) {
@@ -60,7 +62,15 @@ export async function POST(req) {
             return NextResponse.json({ message: 'ไม่พบข้อมูลในระบบ' }, { status: 400 })
         }
 
-        const baseUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}`
+        if (process.env.NODE_ENV === 'production') {
+            baseUrl = 'http://mt200svr:8078'
+        }
+        else {
+            baseUrl = `${req.nextUrl.protocol}//${req.nextUrl.host}`
+        }
+
+        // console.log(process.env.NODE_ENV)
+        // console.log(baseUrl)
 
         const result = query1.rows.map(row => ({
             ROWID: row[0],

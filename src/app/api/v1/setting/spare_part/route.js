@@ -13,7 +13,7 @@ export async function POST(req) {
 
         // --------------------------------------------------------------------------------- Check body
         const data = await req.json()
-        if (!data.department) {
+        if (!data.department || !data.ccc_id) {
             return NextResponse.json({ message: 'invalid body' }, { status: 400 })
         }
 
@@ -50,6 +50,8 @@ export async function POST(req) {
             F17_00_COMMON_DEPARTMENT T6 ON T2.DEP_ID = T6.ID
         WHERE
             T6.DEPARTMENT = :department
+        AND
+            T2.ID = :ccc
         ORDER BY
             T1.PART_NO,
             T3.PD,
@@ -58,7 +60,8 @@ export async function POST(req) {
 
          `
             , {
-                department: data.department
+                department: data.department,
+                ccc: data.ccc_id
             }
         )
 

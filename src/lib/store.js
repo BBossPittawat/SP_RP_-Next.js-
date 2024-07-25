@@ -433,11 +433,11 @@ const useStore = create(set => ({
   data_24: null,
   loading_24: false,
   error_24: null,
-  fetchData_24: async (department) => {
+  fetchData_24: async (department, ccc_id) => {
     set({ loading_24: true, error_24: null })
     try {
       const response = await axios.post('/api/v1/setting/spare_part',
-        { department },
+        { department, ccc_id },
         { headers: { apikey: process.env.NEXT_PUBLIC_API_KEY || '' } }
       )
       set({ data_24: response.data, loading_24: false })
