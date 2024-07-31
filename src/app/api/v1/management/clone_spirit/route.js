@@ -28,7 +28,7 @@ export async function POST(req) {
     }
 
     // ---------------------------------------------------------------------------------  MTLE query
-    const ccc_result = ['6650', '86KC'] // temporary test
+    const ccc_result = ['6650', '86KC', '86TK'] // temporary test
     // console.log(ccc_result)
     // const ccc_result = query1.rows.map(row => row[1])
     const cccList = ccc_result.map(ccc => `'${ccc}'`).join(',')

@@ -55,8 +55,6 @@ export default function Req_mn({ data, fetchData_10 }) {
         }
     }, [jwtData])
 
-
-
     const onProductChange = (e) => {
         const [product, ccc] = e.target.value.split('|')
         setSelectedCcc(ccc)
@@ -209,7 +207,7 @@ export default function Req_mn({ data, fetchData_10 }) {
                     {!formSubmitted ? (
                         <>
                             <select onChange={onProductChange} className="select select-bordered w-full mt-3">
-                                <option disabled selected value="">Product [ โพรดักส์ที่จะนำไปใช้งาน ]</option>
+                                <option disabled selected value="">Product (พื้นที่การผลิตที่จะนำไปใช้งาน)</option>
                                 {productsData && productsData.map((item) => (
                                     <option key={item.id} value={`${item.id}|${item.ccc}`}>{item.product}</option>
                                 ))}
@@ -246,7 +244,7 @@ export default function Req_mn({ data, fetchData_10 }) {
                                 className="input input-bordered w-full mt-3"
                             />
 
-                            <input type="text" placeholder="Remark [ หมายเหตุ ]" value={remark} onChange={(e) => setRemark(e.target.value)} className="input input-bordered w-full mt-3" />
+                            <input type="text" placeholder="หมายเหตุ หรือ ระบุไลน์การผลิตที่จะนำไปใช้งาน" value={remark} onChange={(e) => setRemark(e.target.value)} className="input input-bordered w-full mt-3" />
 
                         </>
                     ) : (
@@ -316,7 +314,7 @@ export default function Req_mn({ data, fetchData_10 }) {
                                 className='input input-bordered w-full mt-3'
                             />
 
-                            <input type="text" placeholder="Remark [ หมายเหตุ ]" value={remark} onChange={(e) => setRemark(e.target.value)} className="input input-bordered w-full mt-3" />
+                            <input type="text" placeholder="หมายเหตุ หรือ ระบุไลน์การผลิตที่จะนำไปใช้งาน" value={remark} onChange={(e) => setRemark(e.target.value)} className="input input-bordered w-full mt-3" />
 
                         </>
                     ) : (

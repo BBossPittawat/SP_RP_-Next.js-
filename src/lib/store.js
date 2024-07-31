@@ -134,26 +134,26 @@ const useStore = create(set => ({
   // },
 
   //---------------------------------------------------------------------------------- Query catalog part
-  data_7: null,
-  loading_7: true,
-  error_7: null,
-  fetchData_7: async (department, product, machine, group) => {
-    set({ loading_7: true, error_7: null })
-    try {
-      const response = await axios.post('/api/v1/items/sidebar/search',
-        { department, product, machine, group },
-        {
-          headers: {
-            'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
-          },
-        }
-      )
-      const data = response.data
-      set({ data_7: data, loading_7: false })
-    } catch (error) {
-      set({ error_7: error.message, loading_7: false })
-    }
-  },
+  // data_7: null,
+  // loading_7: true,
+  // error_7: null,
+  // fetchData_7: async (department, product, machine, group) => {
+  //   set({ loading_7: true, error_7: null })
+  //   try {
+  //     const response = await axios.post('/api/v1/items/sidebar/search',
+  //       { department, product, machine, group },
+  //       {
+  //         headers: {
+  //           'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
+  //         },
+  //       }
+  //     )
+  //     const data = response.data
+  //     set({ data_7: data, loading_7: false })
+  //   } catch (error) {
+  //     set({ error_7: error.message, loading_7: false })
+  //   }
+  // },
 
   //---------------------------------------------------------------------------------- Search items from sidebar
   data_8: null,
@@ -681,6 +681,40 @@ const useStore = create(set => ({
       set({ data_38: response.data, loading_38: false })
     } catch (error) {
       set({ error_38: error.message, loading_38: false })
+    }
+  },
+
+  //---------------------------------------------------------------------------------- setting spare part -> pd mc list
+  data_39: null,
+  loading_39: false,
+  error_39: null,
+  fetchData_39: async (department) => {
+    set({ loading_39: true, error_39: null })
+    try {
+      const response = await axios.post('/api/v1/setting/spare_part/pd_mc_list',
+        { department },
+        { headers: { apikey: process.env.NEXT_PUBLIC_API_KEY || '' } }
+      )
+      set({ data_39: response.data, loading_39: false })
+    } catch (error) {
+      set({ error_39: error.message, loading_39: false })
+    }
+  },
+
+  //---------------------------------------------------------------------------------- setting spare part -> import data
+  data_40: null,
+  loading_40: false,
+  error_40: null,
+  fetchData_40: async (requestData) => {
+    set({ loading_40: true, error_40: null })
+    try {
+      const response = await axios.post('/api/v1/setting/spare_part/import_data',
+        requestData,
+        { headers: { apikey: process.env.NEXT_PUBLIC_API_KEY || '' } }
+      )
+      set({ data_40: response.data, loading_40: false })
+    } catch (error) {
+      set({ error_40: error.message, loading_40: false })
     }
   },
 

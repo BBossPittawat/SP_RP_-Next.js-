@@ -18,8 +18,7 @@ export async function POST(req) {
             !data.budget_no ||
             !data.description ||
             !data.price ||
-            !data.curr ||
-            !data.group_id
+            !data.curr 
         ) {
             return NextResponse.json({ message: 'invalid body' }, { status: 400 })
         }
@@ -37,7 +36,6 @@ export async function POST(req) {
             :description,
             :price,
             :curr,
-            :group_id,
             SYSTIMESTAMP
         )
         `
@@ -48,7 +46,7 @@ export async function POST(req) {
                 description: data.description,
                 price: data.price,
                 curr: data.curr,
-                group_id: data.group_id,
+
             }
         )
 

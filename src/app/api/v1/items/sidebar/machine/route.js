@@ -37,12 +37,18 @@ export async function POST(req) {
             T1.MC_NAME,
             T3.BUDGET_NO,
             T3.ID
-        FROM F17_05_SPRP_MC T1
-        JOIN F17_00_COMMON_PD T2 ON T1.PD_ID = T2.ID
-        JOIN F17_00_COMMON_EXP_BUDGET T3 ON T1.BUDGET_ID = T3.ID
-        WHERE T2.DPM = :department
-        AND T2.ID = :product
-        ORDER BY T1.MC_NAME
+        FROM 
+            F17_05_SPRP_MC T1
+        JOIN    
+            F17_00_COMMON_PD T2 ON T1.PD_ID = T2.ID
+        JOIN 
+            F17_00_COMMON_EXP_BUDGET T3 ON T1.BUDGET_ID = T3.ID
+        WHERE 
+            T2.DPM = :department
+        AND 
+            T2.ID = :product
+        ORDER BY 
+            T1.MC_NAME
         `,
             [data.department, data.product]
         )

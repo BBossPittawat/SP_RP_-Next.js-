@@ -118,7 +118,15 @@ export default function Navbar() {
                                 <td>{row.LOC}</td>
                                 <td>{row.PART_NO}</td>
                                 <td>{row.QTY}</td>
-                                <td>{row.REQ_PIC}</td>
+                                <td>
+                                    {row.REQ_PIC && (
+                                        <>
+                                            {row.REQ_PIC}
+                                            <br />
+                                        </>
+                                    )}
+                                    {row.EMP_NAME}
+                                </td>
                                 <td>{row.REMARK}</td>
                             </tr>
                         ))

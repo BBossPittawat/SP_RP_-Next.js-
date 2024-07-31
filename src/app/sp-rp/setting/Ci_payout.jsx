@@ -85,7 +85,7 @@ export default function Ci_payout({ department }) {
 
     const columns = [
         {
-            title: 'CCC',
+            title: 'CCC FROM',
             dataIndex: 'CCC_NAME',
             key: 'CCC_NAME',
             filters: getColumnFilters('CCC_NAME'),
@@ -93,9 +93,42 @@ export default function Ci_payout({ department }) {
             align: 'center'
         },
         {
+            title: 'CCC TO',
+            dataIndex: 'CCC_ISSU_TO',
+            key: 'CCC_ISSU_TO',
+            filters: getColumnFilters('CCC_ISSU_TO'),
+            onFilter: (value, record) => record.CCC_ISSU_TO && record.CCC_ISSU_TO.includes(value),
+            align: 'center'
+        },
+        {
+            title: 'ACC',
+            dataIndex: 'ACC',
+            key: 'ACC',
+            filters: getColumnFilters('ACC'),
+            onFilter: (value, record) => record.ACC === value,
+            align: 'center'
+        },
+        {
+            title: 'BUDGET PERIOD',
+            dataIndex: 'BUDGET_PERIOD',
+            key: 'BUDGET_PERIOD',
+            filters: getColumnFilters('BUDGET_PERIOD'),
+            onFilter: (value, record) => record.BUDGET_PERIOD && record.BUDGET_PERIOD.includes(value),
+            align: 'center'
+        },
+        {
+            title: 'BUDGET NO.',
+            dataIndex: 'BUDGET_NO',
+            key: 'BUDGET_NO',
+            filters: getColumnFilters('BUDGET_NO'),
+            onFilter: (value, record) => record.BUDGET_NO && record.BUDGET_NO.includes(value),
+            align: 'center'
+        },
+        {
             title: 'PART NAME',
             key: 'PART_NAME',
             align: 'center',
+            width: 200,
             render: (text, record) => (
                 <div>
                     <span style={{ color: 'black' }}>{record.PART_NO}</span><br />
@@ -106,7 +139,7 @@ export default function Ci_payout({ department }) {
             onFilter: (value, record) => record.PART_NO.includes(value) || record.SPEC.includes(value)
         },
         {
-            title: 'Quantity',
+            title: 'QTY',
             dataIndex: 'QTY',
             key: 'QTY',
             filters: getColumnFilters('QTY'),
@@ -121,14 +154,7 @@ export default function Ci_payout({ department }) {
             onFilter: (value, record) => record.UNIT.includes(value),
             align: 'center'
         },
-        {
-            title: 'CCC ISSUE TO',
-            dataIndex: 'CCC_ISSU_TO',
-            key: 'CCC_ISSU_TO',
-            filters: getColumnFilters('CCC_ISSU_TO'),
-            onFilter: (value, record) => record.CCC_ISSU_TO && record.CCC_ISSU_TO.includes(value),
-            align: 'center'
-        },
+
         {
             title: 'MC',
             dataIndex: 'MC_NAME',
@@ -146,14 +172,6 @@ export default function Ci_payout({ department }) {
             align: 'center'
         },
         {
-            title: 'ACC',
-            dataIndex: 'ACC',
-            key: 'ACC',
-            filters: getColumnFilters('ACC'),
-            onFilter: (value, record) => record.ACC === value,
-            align: 'center'
-        },
-        {
             title: 'LOC.',
             dataIndex: 'LOCATION',
             key: 'LOCATION',
@@ -162,7 +180,7 @@ export default function Ci_payout({ department }) {
             align: 'center'
         },
         {
-            title: 'REQUEST',
+            title: 'REQ.',
             key: 'REQUEST',
             align: 'center',
             render: (text, record) => (

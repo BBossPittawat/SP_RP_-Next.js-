@@ -1,27 +1,13 @@
-import Image from "next/image"
-import { Input, Button, Select, Spin } from 'antd'
-import { SearchOutlined, LogoutOutlined } from '@ant-design/icons'
+import { useState, useEffect } from 'react'
+import { TextField, Autocomplete } from '@mui/material'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import axios from 'axios'
 import useStore from '@/lib/store'
 
 export default function Navbar() {
     const router = useRouter()
     const [filteredOptions, setFilteredOptions] = useState([])
-
-    const handleLogout = async () => {
-        try {
-            await axios.post('/api/v1/items/logout', {}, {
-                headers: {
-                    'apikey': process.env.NEXT_PUBLIC_API_KEY || '',
-                },
-            })
-            router.push('/sp-rp')
-        } catch (error) {
-            console.error('Failed to log out:', error)
-        }
-    }
+    const [searchValue, setSearchValue] = useState('')
 
     const {
         data_4,
@@ -29,8 +15,6 @@ export default function Navbar() {
         error_4,
         fetchData_4,
         data_38,
-        loading_38,
-        error_38,
         fetchData_38
     } = useStore()
 
@@ -39,16 +23,16 @@ export default function Navbar() {
     }, [fetchData_4])
 
     useEffect(() => {
-        // if (data_4) {
-        //     const department = data_4?.payload?.department
-        //     if (department) fetchData_38(department)
-        // }
+        if (data_4) {
+            const department = data_4?.payload?.department
+            if (department) fetchData_38(department)
+        }
     }, [data_4])
 
     useEffect(() => {
-        if (error_4 || (data_4 && data_4.payload && !data_4.payload.name)) {
-            window.location.reload()
+        if (error_4 || (data_4 && !data_4.payload?.name)) {
             router.push('/sp-rp')
+            window.location.reload()
         }
     }, [error_4, data_4])
 
@@ -56,81 +40,105 @@ export default function Navbar() {
         setFilteredOptions(data_38 || [])
     }, [data_38])
 
-    // const onChange = (value) => {
-    //     const selectedItem = filteredOptions.find(item => item.PART_NO === value)
-    //     if (selectedItem) window.open(`/sp-rp/request?id=${selectedItem.ROWID}`, '_blank')
-    // }
+    const handleLogout = async () => {
+        try {
+            await axios.post('/api/v1/items/logout', {}, { headers: { 'apikey': process.env.NEXT_PUBLIC_API_KEY || '' } })
+            router.push('/sp-rp')
+        } catch (error) {
+            console.error('Failed to log out:', error)
+        }
+    }
 
-    const onSearch = (value) => {
+    const handleSearchChange = (event, value) => {
+        setSearchValue(value)
         if (!value) setFilteredOptions(data_38)
         else setFilteredOptions(data_38.filter(item => item.PART_NO.includes(value)))
     }
 
-    const SettingClick = async () => {
-        router.push('/sp-rp/setting')
+    const handleCardClick = (rowId) => {
+        if (rowId) window.open(`/sp-rp/request?id=${rowId}`, '_blank')
+        else console.error('Invalid rowId')
     }
 
     return (
-        <nav>
-            <div className="navbar py-1 bg-blue-400 text-black flex justify-between items-center pr-5">
-                <div className="flex items-center">
-                    <Image src="/Image/sr-rp-icon.svg" alt="icon" width={40} height={40} className="mx-3" />
-                    <a
-                        className="btn btn-ghost text-3xl font-bold text-white"
-                        onClick={() => router.push('/sp-rp/items')}
-                    >
-                        SP-RP
-                    </a>
-                </div>
-
-                <Select
-                    showSearch
-                    placeholder="Search Part no."
-                    optionFilterProp="label"
-                    // onChange={onChange}
-                    // onSearch={onSearch}
-                    style={{ width: 900, borderRadius: '15px' }}
-                // filterSort={filteredOptions.map(item => ({ value: item.PART_NO, label: item.PART_NO }))}
-                />
-
-                <div className="flex items-center">
-                    <ul className="menu menu-horizontal">
-                        <li>
-
-                            {loading_4 & !error_4 ? (
-                                <Spin size="large" />
-                            ) : (
-                                <>
-                                    <details>
-                                        <summary>
-                                            <div className="md:block hidden">
-                                                <div className="text-xg text-center font-bold text-white">
-                                                    {data_4?.payload?.name}
-                                                </div>
-                                                <div className="text-xs text-center font-bold text-white">
-                                                    (
-                                                    <span style={{ margin: '0 4px' }}>{data_4?.payload?.status}</span>
-                                                    )
-                                                </div>
-                                            </div>
-                                        </summary>
-                                        <ul className="p-5 rounded-t-none z-50 bg-white shadow-lg">
-
-                                            {data_4?.payload?.status === 'ADMIN' && (
-                                                <li><a onClick={SettingClick}>Setting</a></li>
-                                            )}
-
-                                            <li><a onClick={handleLogout}>Log out</a></li>
-                                        </ul>
-                                    </details>
-                                </>
-                            )}
-
-                        </li>
-                    </ul>
-                </div>
-
+        <nav className="navbar py-1 bg-blue-400 text-black flex justify-between items-center pr-5">
+            <div className="flex items-center">
+                <img src="/Image/sr-rp-icon.svg" alt="icon" width={40} height={40} className="mx-3" />
+                <a className="btn btn-ghost text-3xl font-bold text-white" onClick={() => router.push('/sp-rp/items')}>
+                    SP-RP
+                </a>
             </div>
+
+            <Autocomplete
+                freeSolo
+                options={filteredOptions.map(option => ({
+                    label: `${option.CCC} : ${option.PART_NO}`,
+                    rowId: option.ROWID
+                }))}
+                value={searchValue}
+                onInputChange={handleSearchChange}
+                onChange={(event, value) => handleCardClick(value?.rowId)}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        placeholder="Search Part no."
+                        variant="outlined"
+                        style={{
+                            width: '900px',
+                            backgroundColor: 'white',
+                            borderRadius: '25px'
+                        }}
+                        InputProps={{
+                            ...params.InputProps,
+                            style: {
+                                borderRadius: '25px'
+                            },
+                            classes: {
+                                notchedOutline: {
+                                    borderWidth: '0px'
+                                }
+                            }
+                        }}
+                    />
+                )}
+                filterOptions={(options, state) =>
+                    options.filter(option =>
+                        option.label.split(' : ')[1].includes(state.inputValue)
+                    )
+                }
+            />
+
+            <div className="flex items-center">
+                <ul className="menu menu-horizontal">
+                    <li>
+                        {loading_4 ? (
+                            <div>Loading...</div>
+                        ) : (
+                            <>
+                                <details>
+                                    <summary>
+                                        <div className="md:block hidden">
+                                            <div className="text-xg text-center font-bold text-white">
+                                                {data_4?.payload?.name}
+                                            </div>
+                                            <div className="text-xs text-center font-bold text-white">
+                                                (<span style={{ margin: '0 4px' }}>{data_4?.payload?.status}</span>)
+                                            </div>
+                                        </div>
+                                    </summary>
+                                    <ul className="p-5 rounded-t-none z-50 bg-white shadow-lg">
+                                        {data_4?.payload?.status === 'ADMIN' && (
+                                            <li><a onClick={() => router.push('/sp-rp/setting')}>Setting</a></li>
+                                        )}
+                                        <li><a onClick={handleLogout}>Log out</a></li>
+                                    </ul>
+                                </details>
+                            </>
+                        )}
+                    </li>
+                </ul>
+            </div>
+
         </nav>
     )
 }

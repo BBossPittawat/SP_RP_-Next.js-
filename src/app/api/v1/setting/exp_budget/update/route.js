@@ -13,9 +13,16 @@ export async function POST(req) {
 
         // --------------------------------------------------------------------------------- Check body
         const data = await req.json()
-        if (!data.row_id ||
-            !data.mc_name ||
-            !data.budget_id
+
+        // console.log(data)
+
+        if (!data.id ||
+            !data.period ||
+            !data.ccc_id ||
+            !data.budget_no ||
+            !data.description ||
+            !data.price ||
+            !data.curr
         ) {
             return NextResponse.json({ message: 'invalid body' }, { status: 400 })
         }
@@ -24,15 +31,14 @@ export async function POST(req) {
 
         const conn1 = await MT200conn()
         await conn1.execute(`
-        UPDATE F17_05_SPRP_MC
+        UPDATE F17_00_COMMON_EXP_BUDGET
         SET
             PERIOD = :period,
             CCC_ID = :ccc_id,
             BUDGET_NO = :budget_no,
             DESCRIPTION = :description,
             PRICE = :price,
-            CURR = :curr,
-            GROUP_ID = :group_id
+            CURR = :curr
         WHERE ID = :id
         `
             , {
@@ -43,7 +49,6 @@ export async function POST(req) {
                 description: data.description,
                 price: data.price,
                 curr: data.curr,
-                group_id: data.group_id,
             }
         )
 

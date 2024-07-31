@@ -3,6 +3,10 @@ import { MT200conn } from '@/../utils/mt200DB'
 
 export const dynamic = 'force-dynamic'
 
+let cache = {}
+
+const cache_duration = 3600 * 1000 // 3600 sec -> 1 hr.
+
 export async function POST(req) {
     try {
         //---------------------------------------------------------------------------------- Check API key
@@ -16,6 +20,12 @@ export async function POST(req) {
         if (!data.department
         ) {
             return NextResponse.json({ message: 'invalid body' }, { status: 400 })
+        }
+
+        // ----------------------------------------------------------------------------------- check cache time
+        const now = Date.now();
+        if (cache[data.department] && now - cache[data.department].timestamp < cache_duration) {
+            return NextResponse.json(cache[data.department].data)
         }
 
         //---------------------------------------------------------------------------------- GET data
@@ -51,6 +61,12 @@ export async function POST(req) {
             CCC: row[1],
             PART_NO: row[2],
         }))
+
+        // ----------------------------------------------------------------------------------- update cache data
+        cache[data.department] = {
+            timestamp: now,
+            data: result,
+        }
 
         return NextResponse.json(result)
 

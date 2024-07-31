@@ -38,9 +38,10 @@ export default function Page() {
         } catch (error) {
             const errorMessage = error.response.data.message ? error.response.data.message : 'Failed to connect to the server.'
             setErrorMessage(errorMessage)
+            setSubmitLoading(false)
         }
 
-        setSubmitLoading(false)
+        // setSubmitLoading(false)
     }
 
     return (
@@ -72,12 +73,12 @@ export default function Page() {
 
                                     <input
                                         className="input input-bordered w-10/12 mt-10"
-                                        type="number" placeholder="username : ex.90701" value={username}
+                                        type="number" placeholder="username : emp. code ex.90701" value={username}
                                         onChange={(e) => setUsername(e.target.value)} disabled={SubmitLoading} />
 
                                     <input
                                         className="input input-bordered w-10/12 mt-10"
-                                        type="password" placeholder="password : personal ID" value={password}
+                                        type="password" placeholder="password : birthday ex.19991201" value={password}
                                         onChange={(e) => setPassword(e.target.value)} disabled={SubmitLoading} />
 
                                     <Select

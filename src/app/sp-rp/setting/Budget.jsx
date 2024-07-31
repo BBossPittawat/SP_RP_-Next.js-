@@ -115,28 +115,28 @@ export default function Budget({ department }) {
                 </Select >
             )
         },
-        {
-            title: 'GROUP',
-            dataIndex: 'GP_NAME',
-            align: 'center',
-            render: (text) => (
-                <Select
-                    value={formData.GP_NAME || groupOptions.find(option => option.value === text)?.key}
-                    style={{ width: 120 }}
-                    onChange={(value) => setFormData({ ...formData, GP_NAME: value })}
-                >
-                    {groupOptions.map(option => (
-                        <Option key={option.key} value={option.key}>{option.value}</Option>
-                    ))}
-                </Select>
-            )
-        }
+        // {
+        //     title: 'GROUP',
+        //     dataIndex: 'GP_NAME',
+        //     align: 'center',
+        //     render: (text) => (
+        //         <Select
+        //             value={formData.GP_NAME || groupOptions.find(option => option.value === text)?.key}
+        //             style={{ width: 120 }}
+        //             onChange={(value) => setFormData({ ...formData, GP_NAME: value })}
+        //         >
+        //             {groupOptions.map(option => (
+        //                 <Option key={option.key} value={option.key}>{option.value}</Option>
+        //             ))}
+        //         </Select>
+        //     )
+        // }
     ]
 
-    const groupOptions = [
-        { key: 1, value: 'Processing cost' },
-        { key: 2, value: 'Indirect cost' }
-    ]
+    // const groupOptions = [
+    //     { key: 1, value: 'Processing cost' },
+    //     { key: 2, value: 'Indirect cost' }
+    // ]
 
     const plainTextColumns = [
         { title: 'PERIOD', dataIndex: 'PERIOD', align: 'center' },
@@ -145,7 +145,7 @@ export default function Budget({ department }) {
         { title: 'DESCRIPTION', dataIndex: 'DESCRIPTION', align: 'center' },
         { title: 'PRICE', dataIndex: 'PRICE', align: 'center' },
         { title: 'CURR', dataIndex: 'CURR', align: 'center' },
-        { title: 'GROUP', dataIndex: 'GP_NAME', align: 'center' },
+        // { title: 'GROUP', dataIndex: 'GP_NAME', align: 'center' },
         {
             key: "action",
             align: "center",
@@ -187,7 +187,7 @@ export default function Budget({ department }) {
                 description: formData.DESCRIPTION,
                 price: formData.PRICE,
                 curr: formData.CURR,
-                group_id: formData.GP_NAME
+                // group_id: formData.GP_NAME
             })
             setFormData({
                 PERIOD: null,
@@ -196,7 +196,7 @@ export default function Budget({ department }) {
                 DESCRIPTION: null,
                 PRICE: null,
                 CURR: null,
-                GP_NAME: null
+                // GP_NAME: null
             })
             await fetchPeriod(formData.PERIOD)
         } else {
@@ -207,6 +207,17 @@ export default function Budget({ department }) {
     const ReviseClicked = async () => {
         if (Object.values(formData).every(value => value !== null && value !== '')) {
             setShowError(false)
+            // const data = {
+            //     id: formData.ID,
+            //     period: formData.PERIOD,
+            //     ccc_id: formData.CCC_NAME,
+            //     budget_no: formData.BUDGET_NO,
+            //     description: formData.DESCRIPTION,
+            //     price: formData.PRICE,
+            //     curr: formData.CURR,
+            // }
+            // console.log(data)
+
             await fetchData_32({
                 id: formData.ID,
                 period: formData.PERIOD,
@@ -215,7 +226,7 @@ export default function Budget({ department }) {
                 description: formData.DESCRIPTION,
                 price: formData.PRICE,
                 curr: formData.CURR,
-                group_id: formData.GP_NAME
+                // group_id: formData.GP_NAME
             })
             setFormData({
                 ID: 0,
@@ -225,7 +236,7 @@ export default function Budget({ department }) {
                 DESCRIPTION: null,
                 PRICE: null,
                 CURR: null,
-                GP_NAME: null
+                // GP_NAME: null
             })
             await fetchPeriod(formData.PERIOD)
         } else {

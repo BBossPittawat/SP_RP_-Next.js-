@@ -1,15 +1,22 @@
 'use client'
 import useStore from '@/lib/store'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Table, Upload, Button, Input, Select, Spin } from 'antd'
 import { UploadOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { width } from '@mui/system'
+import ExcelJS from 'exceljs'
+import { saveAs } from 'file-saver'
 
 export default function Spare_part({ department }) {
+
+    const modalRef = useRef(null)
 
     const [editingRow, setEditingRow] = useState(null)
     const [uploadedFiles, setUploadedFiles] = useState({})
     const [cccId, setCccId] = useState(null)
+    const [attachedFile, setAttachedFile] = useState(null)
+    const [isUpdating, setIsUpdating] = useState(false)
+    const [fileInputValue, setFileInputValue] = useState('')
 
     const {
         data_24: Data_TB,
@@ -26,6 +33,12 @@ export default function Spare_part({ department }) {
         data_30: ddl_ccc,
         loading_30: loading_ddl_ccc,
         fetchData_30: fetch_ddl_ccc,
+        data_39: data_pd_mc,
+        loading_39: loading_pd_mc,
+        fetchData_39: fetch_pd_mc,
+        data_40,
+        loading_40,
+        fetchData_40,
     } = useStore()
 
     const [formData, setFormData] = useState({
@@ -73,7 +86,10 @@ export default function Spare_part({ department }) {
         await fetch_TB(department, value)
         await fetchData_25(department)
         await fetchData_26()
+        await fetch_pd_mc(department)
     }
+
+    // console.log(data_pd_mc)
 
     const handleRevise = async () => {
         // const ccc_id = value
@@ -315,7 +331,6 @@ export default function Spare_part({ department }) {
             key: 'REMARK',
             align: 'center'
         },
-
         {
             key: "action",
             align: "center",
@@ -325,6 +340,165 @@ export default function Spare_part({ department }) {
         }
     ]
 
+    const handleExport = async () => {
+        const workbook = new ExcelJS.Workbook()
+        const worksheet = workbook.addWorksheet('Spare Parts')
+        const worksheet2 = workbook.addWorksheet('PD & Machine list')
+        const worksheet3 = workbook.addWorksheet('Group list')
+
+        worksheet.columns = [
+            { header: 'ID', key: 'ID', width: 5 },
+            { header: 'CCC', key: 'CCC_NAME', width: 10 },
+            { header: 'IMG STATUS', key: 'IMG_STATUS', width: 10 },
+            { header: 'PART NO.', key: 'PART_NO', width: 25 },
+            { header: 'SPEC', key: 'SPEC', width: 35 },
+            { header: 'PRODUCT', key: 'PD', width: 15 },
+            { header: 'MC NAME', key: 'MC_NAME', width: 30 },
+            { header: 'GROUP', key: 'GROUP', width: 15 },
+            { header: 'LOCATION', key: 'LOCATION', width: 10 },
+            { header: 'REMARK', key: 'REMARK', width: 20 }
+        ]
+
+        Data_TB.forEach(item => {
+            worksheet.addRow({
+                ID: item.ID,
+                CCC_NAME: item.CCC_NAME,
+                IMG_STATUS: item.IMG ? 'Available' : '-',
+                PART_NO: item.PART_NO,
+                SPEC: item.SPEC,
+                PD: item.PD,
+                MC_NAME: item.MC_NAME,
+                GROUP: item.GROUP,
+                LOCATION: item.LOCATION,
+                REMARK: item.REMARK
+            })
+        })
+
+        worksheet.columns.forEach(column => {
+            column.alignment = {
+                vertical: 'middle',
+                horizontal: 'center'
+            }
+        })
+
+        worksheet.eachRow({ includeEmpty: true }, row => {
+            row.eachCell(cell => {
+                cell.alignment = {
+                    vertical: 'middle',
+                    horizontal: 'center'
+                }
+            })
+        })
+        // --------------------------------------------------------------------------- worksheet 2
+        worksheet2.columns = [
+            { header: 'PRODUCT', key: 'PRODUCT', width: 15 },
+            { header: 'MACHINE', key: 'MACHINE', width: 30 }
+        ]
+
+        if (data_pd_mc) {
+            data_pd_mc.forEach(item => {
+                worksheet2.addRow({
+                    PRODUCT: item.PRODUCT,
+                    MACHINE: item.MACHINE
+                })
+            })
+        }
+
+        worksheet2.columns.forEach(column => {
+            column.alignment = {
+                vertical: 'middle',
+                horizontal: 'center'
+            }
+        })
+
+        // --------------------------------------------------------------------------- worksheet 3
+
+        worksheet3.columns = [
+            { header: 'GROUP', key: 'GROUP', width: 15 },
+        ]
+
+        if (ddlGroup) {
+            ddlGroup.forEach(item => {
+                worksheet3.addRow({
+                    GROUP: item.GROUP,
+                })
+            })
+        }
+
+        // ---------------------------------------------------------------------------
+
+        await worksheet.protect('P7aIfwlR8dbGMRn')
+        await worksheet2.protect('P7aIfwlR8dbGMRn')
+        await worksheet3.protect('P7aIfwlR8dbGMRn')
+
+        for (let i = 1; i <= worksheet.columns.length; i++) {
+            if (i > 5) {
+                worksheet.getColumn(i).eachCell(cell => {
+                    cell.protection = {
+                        locked: false
+                    }
+                })
+            }
+        }
+
+        const cccName = ddl_ccc.find(item => item.ID === cccId)?.CCC_NAME || 'spare_part'
+        const filename = `${cccName}_spare_part.xlsx`
+
+        workbook.xlsx.writeBuffer().then(buffer => {
+            saveAs(new Blob([buffer]), filename)
+        })
+    }
+
+    const handleUpdate = async () => {
+        if (!attachedFile) return
+
+        setIsUpdating(true) // Set loading state to true
+
+        const reader = new FileReader()
+        reader.onload = async (e) => {
+            const buffer = e.target.result
+            const workbook = new ExcelJS.Workbook()
+            await workbook.xlsx.load(buffer)
+            const worksheet1 = workbook.getWorksheet(1)
+
+            let completedCalls = 0
+            const totalCalls = worksheet1.actualRowCount - 1 // Subtract header row
+
+            worksheet1.eachRow(async (row, rowNumber) => {
+                if (rowNumber === 1) return // Skip header row
+
+                let requestData = {
+                    id: row.getCell('A').value,
+                    ccc: row.getCell('B').value,
+                    product: row.getCell('F').value || '0',
+                    machine: row.getCell('G').value || '0',
+                    group: row.getCell('H').value || '0',
+                    location: row.getCell('I').value || '0',
+                    remark: row.getCell('J').value || '0',
+                }
+
+                try {
+                    await fetchData_40(requestData)
+                    completedCalls++
+
+                    if (completedCalls === totalCalls) {
+                        setIsUpdating(false)
+                        setAttachedFile(null)
+                        setFileInputValue('')
+
+                        if (modalRef.current) {
+                            modalRef.current.close()
+                        }
+
+                        await fetch_TB(department, cccId)
+                    }
+                } catch (error) {
+                    console.error("Error in fetchData_40:", error)
+                }
+            })
+        }
+        reader.readAsArrayBuffer(attachedFile)
+    }
 
     return (
         <div className="card bg-base-100 shadow-xl">
@@ -348,6 +522,45 @@ export default function Spare_part({ department }) {
                         ))}
                     </Select>
                 )}
+
+                {cccId && ddl_ccc.find(item => item.ID === cccId)?.CCC_NAME && data_pd_mc &&
+                    <button className="btn btn-sm btn-neutral" onClick={() => document.getElementById('my_modal_1').showModal()}>Multiple data management</button>
+                }
+
+                <dialog id="my_modal_1" className="modal" ref={modalRef}>
+                    <div className="modal-box">
+                        <h3 className="font-bold text-lg mb-5">SPARE PART</h3>
+
+                        <button className="btn btn-sm btn-primary w-full" onClick={handleExport}>
+                            Export [ ดาวน์โหลดข้อมูล ]
+                        </button>
+
+                        <h3 className="font-bold text-ls mt-5">Import [ นำเข้าข้อมูล ]</h3>
+
+                        <input
+                            type="file"
+                            className="mt-1 file-input file-input-sm file-input-bordered file-input-accent w-full"
+                            value={fileInputValue}
+                            onChange={(e) => {
+                                setAttachedFile(e.target.files[0])
+                                setFileInputValue(e.target.value)
+                            }}
+                        />
+
+                        <div className="modal-action">
+                            {isUpdating ? (
+                                <Spin className='mt-2 me-5' size="large" />
+                            ) : (
+                                attachedFile && (
+                                    <button className="btn btn-accent me-3" onClick={handleUpdate}>Update</button>
+                                )
+                            )}
+                            <form method="dialog">
+                                <button className="btn">Close</button>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>
 
                 <div className="card bg-base-100 shadow-xl">
                     <div className="card-body">

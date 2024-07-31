@@ -39,16 +39,29 @@ export async function POST(req) {
                 T5.MC_NAME,
                 T6.MN_CODE,
                 T7.NAME_TYPE,
-                T1.CCC
-            FROM F17_05_SPRP_REQ_HIS T1
-            JOIN F17_05_SPRP_PART_LIST T2 ON T1.PART_ID = T2.ID
-            JOIN F17_00_COMMON_CCC T3 ON T2.CCC_ID = T3.ID
-            JOIN F17_00_COMMON_PD T4 ON T4.ID = T3.ID
-            LEFT JOIN F17_05_SPRP_MC T5 ON T5.ID = T1.MC_ID
-            JOIN F17_05_SPRP_MN_CODE T6 ON T6.ID = T1.MN_CODE_ID
-            JOIN F17_05_SPRP_REQ_TYPE T7 ON T7.ID = T1.REQ_TYPE_ID
-            WHERE T4.DPM = :department
-            AND T1.ADMIN_JDM_STATUS IS NULL
+                T1.CCC,
+                T8.PERIOD,
+                T8.BUDGET_NO
+            FROM
+                F17_05_SPRP_REQ_HIS T1
+            JOIN 
+                F17_05_SPRP_PART_LIST T2 ON T1.PART_ID = T2.ID
+            JOIN 
+                F17_00_COMMON_CCC T3 ON T2.CCC_ID = T3.ID
+            JOIN 
+                F17_00_COMMON_PD T4 ON T4.ID = T3.ID
+            LEFT JOIN 
+                F17_05_SPRP_MC T5 ON T5.ID = T1.MC_ID
+            JOIN 
+                F17_05_SPRP_MN_CODE T6 ON T6.ID = T1.MN_CODE_ID
+            JOIN 
+                F17_05_SPRP_REQ_TYPE T7 ON T7.ID = T1.REQ_TYPE_ID
+            LEFT JOIN  
+                F17_00_COMMON_EXP_BUDGET T8 ON T8.ID = T1.BUDGET_ID
+            WHERE 
+                T4.DPM = :department
+            AND 
+                T1.ADMIN_JDM_STATUS IS NULL
             `,
             {
                 department: data.department
@@ -92,7 +105,9 @@ export async function POST(req) {
                 MN_CODE: row[12],
                 NAME_TYPE: row[13],
                 CCC_ISSU_TO: row[14],
-                EMP_NAME: emp_name
+                EMP_NAME: emp_name,
+                BUDGET_PERIOD: row[15],
+                BUDGET_NO: row[16],
             }
         }))
 

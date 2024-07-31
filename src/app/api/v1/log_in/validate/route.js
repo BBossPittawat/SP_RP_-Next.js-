@@ -38,7 +38,7 @@ export async function POST(req) {
     SECTION
     FROM EMPLOYEE_DATA
     WHERE EMPCODE = :username
-    AND PERSONAL_ID = :password
+    AND BIRTHDAY = :password
     AND DATE_RESIGN = '0'
     `,
     [username,password]

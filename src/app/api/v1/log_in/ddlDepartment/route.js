@@ -28,14 +28,14 @@ export async function GET(req) {
         // ----------------------------------------------------------------------------------- find data
         const conn1 = await MT200conn()
         const query1 = await conn1.execute(
-        `
+            `
         SELECT DEPARTMENT
         FROM F17_00_COMMON_DEPARTMENT
         `
         )
 
         if (query1.rows.length === 0) {
-            return NextResponse.json({message: 'ไม่พบข้อมูลในระบบ'},{ status: 400 })
+            return NextResponse.json({ message: 'ไม่พบข้อมูลในระบบ' }, { status: 400 })
         }
 
         const departments = query1.rows.map(row => row[0])
@@ -43,9 +43,9 @@ export async function GET(req) {
         cache = {
             timestamp: Date.now(),
             data: departments,
-         };
-  
-        return NextResponse.json({data:{departments}});
+        }
+
+        return NextResponse.json({ data: { departments } });
 
     } catch (error) {
         // console.error(error)
