@@ -46,7 +46,7 @@ export default function Budget({ department }) {
             DESCRIPTION: null,
             PRICE: null,
             CURR: null,
-            GP_NAME: null,
+            // GP_NAME: null,
         }
     )
 
@@ -178,8 +178,12 @@ export default function Budget({ department }) {
     }
 
     const RegisterClicked = async () => {
+
         if (Object.values(formData).every(value => value !== null && value !== '')) {
             setShowError(false)
+
+            console.log(formData)
+
             await fetchData_31({
                 period: formData.PERIOD,
                 ccc_id: formData.CCC_NAME,

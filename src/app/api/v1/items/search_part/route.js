@@ -33,6 +33,7 @@ export async function POST(req) {
         const conn1 = await MT200conn()
         const query1 = await conn1.execute(`
         SELECT
+             T1.ID,
              T1.ROWID,
              T2.CCC_NAME,
              T1.PART_NO
@@ -57,9 +58,10 @@ export async function POST(req) {
         }
 
         const result = query1.rows.map(row => ({
-            ROWID: row[0],
-            CCC: row[1],
-            PART_NO: row[2],
+            ID: row[0],
+            ROWID: row[1],
+            CCC: row[2],
+            PART_NO: row[3],
         }))
 
         // ----------------------------------------------------------------------------------- update cache data

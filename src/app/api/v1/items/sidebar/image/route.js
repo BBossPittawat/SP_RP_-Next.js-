@@ -17,7 +17,7 @@ export async function GET(req) {
       `
       SELECT IMG
       FROM F17_05_SPRP_PART_LIST
-      WHERE ROWID = :partNo
+      WHERE ID = :partNo
       `,
       { partNo }
     )

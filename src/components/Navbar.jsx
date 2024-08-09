@@ -55,9 +55,9 @@ export default function Navbar() {
         else setFilteredOptions(data_38.filter(item => item.PART_NO.includes(value)))
     }
 
-    const handleCardClick = (rowId) => {
-        if (rowId) window.open(`/sp-rp/request?id=${rowId}`, '_blank')
-        else console.error('Invalid rowId')
+    const handleCardClick = (ID) => {
+        if (ID) window.open(`/sp-rp/request?id=${ID}`, '_blank')
+        else console.error('Invalid ID')
     }
 
     return (
@@ -73,11 +73,11 @@ export default function Navbar() {
                 freeSolo
                 options={filteredOptions.map(option => ({
                     label: `${option.CCC} : ${option.PART_NO}`,
-                    rowId: option.ROWID
+                    ID: option.ID
                 }))}
                 value={searchValue}
                 onInputChange={handleSearchChange}
-                onChange={(event, value) => handleCardClick(value?.rowId)}
+                onChange={(event, value) => handleCardClick(value?.ID)}
                 renderInput={(params) => (
                     <TextField
                         {...params}

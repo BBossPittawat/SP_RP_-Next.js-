@@ -47,10 +47,13 @@ export async function POST(req) {
       LEFT JOIN (
           SELECT PART_ID, SUM(QTY) AS TOTAL_QTY
           FROM F17_05_SPRP_REQ_HIS
-          WHERE ADMIN_JDM_STATUS IS NULL
+          WHERE 
+            ADMIN_JDM_STATUS IS NULL
+          OR 
+            ADMIN_JDM_STATUS = 1
           GROUP BY PART_ID
       ) Q ON Q.PART_ID = T1.ID
-      WHERE T1.ROWID = :id
+      WHERE T1.ID = :id
       `
       , {
         id: data.id
@@ -80,7 +83,7 @@ export async function POST(req) {
       MC_NAME: row[8],
       LOCATION: row[9],
       STOCK: row[10],
-      IMG_URL: row[1] ? `${baseUrl}/api/v1/items/sidebar/image?partNo=${row[0]}` : null,
+      IMG_URL: row[1] ? `${baseUrl}/api/v1/items/sidebar/image?partNo=${row[12]}` : null,
       DEPT: row[11],
       REMARK: row[13],
     }))

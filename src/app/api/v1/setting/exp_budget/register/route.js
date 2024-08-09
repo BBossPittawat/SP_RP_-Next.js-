@@ -18,7 +18,7 @@ export async function POST(req) {
             !data.budget_no ||
             !data.description ||
             !data.price ||
-            !data.curr 
+            !data.curr
         ) {
             return NextResponse.json({ message: 'invalid body' }, { status: 400 })
         }
@@ -28,7 +28,13 @@ export async function POST(req) {
         const conn1 = await MT200conn()
         await conn1.execute(`
         INSERT INTO F17_00_COMMON_EXP_BUDGET (
-            PERIOD,CCC_ID,BUDGET_NO,DESCRIPTION,PRICE,CURR,GROUP_ID,DTE_UPDATE
+            PERIOD,
+            CCC_ID,
+            BUDGET_NO,
+            DESCRIPTION,
+            PRICE,
+            CURR,
+            DTE_UPDATE
         ) VALUES (
             :period,
             :ccc_id,
@@ -46,7 +52,6 @@ export async function POST(req) {
                 description: data.description,
                 price: data.price,
                 curr: data.curr,
-
             }
         )
 

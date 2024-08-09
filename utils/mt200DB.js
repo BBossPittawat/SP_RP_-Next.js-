@@ -20,7 +20,7 @@ export async function MT200conn() {
     } finally {
         if (connection) {
             // console.log("connection closed")
-            await connection.close
+            connection.close
         }
     }
 }

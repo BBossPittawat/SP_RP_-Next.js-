@@ -36,8 +36,8 @@ export async function POST(req) {
                 ))
 
             if (!fileName) {
-                console.error('File not found')
-                return NextResponse.json({ message: 'File not found' }, { status: 404 })
+                console.error(`File not found, id: ${data.id}`)
+                return NextResponse.json({ message: 'File not found', id: data.id }, { status: 404 })
             }
 
             const imgBuffer = await fs.readFile(path.join(sourceDir, fileName))

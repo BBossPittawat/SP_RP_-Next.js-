@@ -34,7 +34,8 @@ export async function POST(req) {
              T1.PART_NO,
              T1.SPEC,
              T1.STOCK - COALESCE(Q.TOTAL_QTY, 0) AS STOCK,
-             T1.IMG
+             T1.IMG,
+             T1.ID
         FROM F17_05_SPRP_PART_LIST T1
         JOIN F17_00_COMMON_CCC T2 ON T2.ID = T1.CCC_ID
         JOIN F17_00_COMMON_DEPARTMENT T3 ON T3.ID = T2.DEP_ID
@@ -42,7 +43,10 @@ export async function POST(req) {
         LEFT JOIN (
           SELECT PART_ID, SUM(QTY) AS TOTAL_QTY
           FROM F17_05_SPRP_REQ_HIS
-          WHERE ADMIN_JDM_STATUS IS NULL
+          WHERE 
+            ADMIN_JDM_STATUS IS NULL
+          OR 
+            ADMIN_JDM_STATUS = 1
           GROUP BY PART_ID
         ) Q ON Q.PART_ID = T1.ID
         WHERE T3.DEPARTMENT = :department
@@ -77,7 +81,8 @@ export async function POST(req) {
             PART_NO: row[1],
             SPEC: row[2],
             STOCK: row[3],
-            IMG_URL: row[4] ? `${baseUrl}/api/v1/items/sidebar/image?partNo=${row[0]}` : null,
+            IMG_URL: row[4] ? `${baseUrl}/api/v1/items/sidebar/image?partNo=${row[5]}` : null,
+            ID: row[5],
         }))
 
         return NextResponse.json(result)

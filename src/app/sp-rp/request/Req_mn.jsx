@@ -82,7 +82,6 @@ export default function Req_mn({ data, fetchData_10 }) {
             req_type_id: 1,
             product_id: selectedProduct,
             machine_id: selectedMachine,
-            budget_id: machinesData[0].budget_id,
             mn_code_id: selectedMnCode,
             acc: selectedMnAcc,
             ccc: selectedCcc,
@@ -99,8 +98,7 @@ export default function Req_mn({ data, fetchData_10 }) {
             !requestData.mn_code_id || requestData.mn_code_id == "" ||
             !requestData.qty || requestData.qty == "" ||
             !requestData.remark || requestData.remark == "" ||
-            !requestData.part_id || requestData.part_id == "" ||
-            !requestData.budget_id
+            !requestData.part_id || requestData.part_id == ""
         ) {
 
             setErrorMessage("กรุณากรอกข้อมูลให้ครบถ้วน")
@@ -135,7 +133,7 @@ export default function Req_mn({ data, fetchData_10 }) {
         setErrorMessage('')
 
         if (formSubmitted) (
-            fetchData_10(data[0].ROWID)
+            fetchData_10(data[0].ID)
         )
 
     }

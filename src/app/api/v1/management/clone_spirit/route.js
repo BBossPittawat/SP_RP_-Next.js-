@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { MT200conn } from '@/../utils/mt200DB'
 import { mteDBconn } from '@/../utils/mteDB'
+import { spiritDBconn } from '@/../utils/spiritDB'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,37 +33,77 @@ export async function POST(req) {
     // console.log(ccc_result)
     // const ccc_result = query1.rows.map(row => row[1])
     const cccList = ccc_result.map(ccc => `'${ccc}'`).join(',')
-    const conn2 = await mteDBconn()
+    const conn2 = await spiritDBconn()
     const query2 = await conn2.execute(
       `
-        SELECT DISTINCT T1.CCC AS CCC,
-        T1.PART_NO AS PART_NO,
-        T1.SPECIFY AS SPEC,
-        T1.STOCK_QTY AS STOCK,
-        T1.ORD_POINT_QTY AS OP,
-        T1.ECO_ORDER_QTY AS OQ,
-        ROUND(T1.PUR_UNIT_PRICE_LOC, 2) AS LAST_PRICE,
-        T1.HANDLING_CD AS UNIT,
-        T1.LAST_ORD_CUR_CD AS CUR,
-        T1.PURCHASE_LT AS LT,
-        T1.MOQ AS MOQ,
-        T1.LAST_VEN_CD AS VENDER_CODE,
-        T2.SUPPLIER_NO AS VERDER_NAME,
-        T2.QUOTE_UNI_DATE AS EXPIRE_DATE
-        FROM MATERIAL_ITEM_MASTER T1
-        JOIN MATERIAL_QUOTATION T2 ON T1.PART_NO = T2.PARTNO
-        WHERE T1.CCC IN (${cccList})
-          AND T1.STOCK_QTY <> 0
-          AND T1.ACC_TITLE_CD = '64422'
-          AND TO_DATE(T2.QUOTE_UNI_DATE, 'DD-MON-YY') = (
-            SELECT MAX(TO_DATE(QUOTE_UNI_DATE, 'DD-MON-YY'))
-            FROM MATERIAL_QUOTATION
-            WHERE PARTNO = T1.PART_NO)
+        SELECT DISTINCT 
+          T1.CD00059 AS CCC,
+          T1.CD05185 AS PART_NO,
+          T1.DH00070 AS SPEC,
+          T1.SU00355 AS STOCK,
+          T1.SU00372 AS OP,
+          T1.SU00363 AS OQ,
+          ROUND(T1.TK00051,2) AS LAST_PRICE,
+          T1.CD00127 AS UNIT,
+          T1.CD06355 AS CUR,
+          T1.NI00010 AS LT,
+          T1.SU00357 AS MOQ,
+          T1.CD00426 AS VENDER_CODE,
+          T2.DH00067 AS VERDER_NAME,
+          TO_CHAR(T2.HI31507, 'DD-Mon-YY', 'NLS_DATE_LANGUAGE = AMERICAN') AS EXPIRE_DATE
+        FROM 
+          SCHM_C600_MTL.MV0008 T1
+        LEFT JOIN
+          SCHM_C600_MTL.MV4001WF T2 ON T1.CD05185 = T2.CD05185
+        WHERE
+          T1.CD00059 IN (${cccList})
+        AND
+          T1.CD06355 IS NOT NULL
+      --AND 
+      -- 	T1.SU00355 <> 0
+        AND 
+          T1.CD00042A = '64422'
+        AND (
+            T2.CD05185 IS NULL OR
+            T2.HI31507 = (
+                SELECT MAX(HI31507)
+                FROM SCHM_C600_MTL.MV4001WF
+                WHERE CD05185 = T1.CD05185
+            )
+        )
       `
     )
+    // const conn2 = await mteDBconn()
+    // const query2 = await conn2.execute(
+    //   `
+    //     SELECT DISTINCT T1.CCC AS CCC,
+    //     T1.PART_NO AS PART_NO,
+    //     T1.SPECIFY AS SPEC,
+    //     T1.STOCK_QTY AS STOCK,
+    //     T1.ORD_POINT_QTY AS OP,
+    //     T1.ECO_ORDER_QTY AS OQ,
+    //     ROUND(T1.PUR_UNIT_PRICE_LOC, 2) AS LAST_PRICE,
+    //     T1.HANDLING_CD AS UNIT,
+    //     T1.LAST_ORD_CUR_CD AS CUR,
+    //     T1.PURCHASE_LT AS LT,
+    //     T1.MOQ AS MOQ,
+    //     T1.LAST_VEN_CD AS VENDER_CODE,
+    //     T2.SUPPLIER_NO AS VERDER_NAME,
+    //     T2.QUOTE_UNI_DATE AS EXPIRE_DATE
+    //     FROM MATERIAL_ITEM_MASTER T1
+    //     JOIN MATERIAL_QUOTATION T2 ON T1.PART_NO = T2.PARTNO
+    //     WHERE T1.CCC IN (${cccList})
+    //       AND T1.STOCK_QTY <> 0
+    //       AND T1.ACC_TITLE_CD = '64422'
+    //       AND TO_DATE(T2.QUOTE_UNI_DATE, 'DD-MON-YY') = (
+    //         SELECT MAX(TO_DATE(QUOTE_UNI_DATE, 'DD-MON-YY'))
+    //         FROM MATERIAL_QUOTATION
+    //         WHERE PARTNO = T1.PART_NO)
+    //   `
+    // )
 
     if (query2.rows.length === 0) {
-      return new Response('no MTLE data found', { status: 400 })
+      return new Response('no data found', { status: 400 })
     }
 
     const mt200_format_mng = query2.rows.map(row => {

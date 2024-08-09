@@ -16,12 +16,23 @@ export default function Navbar() {
         error_18: ErrDT18
     } = useStore()
 
-    const [selectedDepartment, setSelectedDepartment] = useState('')
+    const [Department, setDepartment] = useState(null)
 
-    const onDepartmentChange = (value) => {
-        setSelectedDepartment(value)
-        fetchTableData(value)
-    }
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const searchParams = new URLSearchParams(window.location.search)
+            setDepartment(searchParams.get('dept'))
+        }
+    }, [])
+
+    // console.log(Department)
+
+    // const [selectedDepartment, setSelectedDepartment] = useState('')
+
+    // const onDepartmentChange = (value) => {
+    //     setSelectedDepartment(value)
+    //     fetchTableData(value)
+    // }
 
     useEffect(() => {
         FetchDT2()
@@ -29,15 +40,15 @@ export default function Navbar() {
 
     useEffect(() => {
         let interval
-        if (selectedDepartment) {
+        if (Department) {
             interval = setInterval(() => {
-                fetchTableData(selectedDepartment)
+                fetchTableData(Department)
                 console.log("timer trigger")
             }, 5000) // 5 sec timer
         }
 
         return () => clearInterval(interval)
-    }, [selectedDepartment, fetchTableData])
+    }, [Department, fetchTableData])
 
     return (
         <>
@@ -81,7 +92,8 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
-                            <Select
+                            <span className="text-3xl mr-4 font-bold text-white">{Department}</span>
+                            {/* <Select
                                 showSearch
                                 placeholder="department"
                                 value={selectedDepartment || undefined}
@@ -90,7 +102,7 @@ export default function Navbar() {
                                 className="text-center mt-2"
                                 style={{ width: '150px', height: '40px', fontSize: '16px' }}
                                 size="large"
-                            />
+                            /> */}
                         </>
                     )}
 

@@ -21,7 +21,6 @@ export async function POST(req) {
             !data.remark ||
             !data.part_id ||
             !data.emp_code ||
-            !data.budget_id ||
             !data.acc ||
             !data.ccc
         ) {
@@ -58,24 +57,23 @@ export async function POST(req) {
             SYSTIMESTAMP,
             :req_type_id,
             :emp_code,
-            :budget_id,
+            (SELECT BUDGET_ID FROM F17_05_SPRP_MC WHERE ID = :machine_id),
             :acc,
             :ccc
         )
         `,
-            [
-                data.part_id,
-                data.product_id,
-                data.machine_id,
-                data.mn_code_id,
-                data.qty,
-                data.remark,
-                data.req_type_id,
-                data.emp_code,
-                data.budget_id,
-                data.acc,
-                data.ccc
-            ]
+            {
+                part_id: data.part_id,
+                product_id: data.product_id,
+                machine_id: data.machine_id,
+                mn_code_id: data.mn_code_id,
+                qty: data.qty,
+                remark: data.remark,
+                req_type_id: data.req_type_id,
+                emp_code: data.emp_code,
+                acc: data.acc,
+                ccc: data.ccc
+            }
         )
 
         await conn1.commit()

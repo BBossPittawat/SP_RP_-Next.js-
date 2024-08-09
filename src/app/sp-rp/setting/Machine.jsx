@@ -42,11 +42,17 @@ export default function Machine({ department }) {
     const filteredBudget = data_35?.filter(item => item.PERIOD === selectedPeriod)
 
     const SubmitClicked = async () => {
-        const selectedBudgetItem = filteredBudget?.find(item => item.BUDGET_NO === selectedBudgetNo)
 
+        const selectedBudgetItem = filteredBudget?.find(item => item.BUDGET_NO === selectedBudgetNo)
         if (!inputValue || !selectedBudgetItem?.ID || !selectedProductItem) {
             setErrorMessage('กรุณากรอกข้อมูลให้ครบถ้วน')
             return
+        }
+
+        const isDuplicate = data_34?.some(item => item.MC_NAME.toUpperCase() === inputValue.toUpperCase());
+        if (isDuplicate) {
+            setErrorMessage('พบชื่อเครื่องจักรซ้ำ');
+            return;
         }
 
         const requestData = {

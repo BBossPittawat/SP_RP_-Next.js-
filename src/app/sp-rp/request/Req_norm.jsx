@@ -133,7 +133,7 @@ export default function Req_norm({ data, fetchData_10 }) {
         setErrorMessage('')
 
         if (formSubmitted) (
-            fetchData_10(data[0].ROWID)
+            fetchData_10(data[0].ID)
         )
 
     }

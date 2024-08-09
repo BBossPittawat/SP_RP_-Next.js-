@@ -37,7 +37,7 @@ export async function POST(req) {
             F17_00_COMMON_EXP_BUDGET T1
         JOIN
             F17_00_COMMON_CCC T2 ON T2.ID = T1.CCC_ID
-        JOIN
+        LEFT JOIN
             F17_00_COMMON_BUDGET_GROUP T3 ON T3.ID = T1.GROUP_ID
         JOIN
             F17_00_COMMON_DEPARTMENT T4 ON T4.ID = T2.DEP_ID

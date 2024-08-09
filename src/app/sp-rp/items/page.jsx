@@ -26,9 +26,11 @@ export default function Page() {
     }
   }, [data_8])
 
-  const handleCardClick = (rowId) => {
-    if (rowId) {
-      window.open(`/sp-rp/request?id=${rowId}`, '_blank')
+  // console.log(data_8)
+
+  const handleCardClick = (ID) => {
+    if (ID) {
+      window.open(`/sp-rp/request?id=${ID}`, '_blank')
     } else {
       console.error('Invalid rowId')
     }
@@ -92,7 +94,7 @@ export default function Page() {
                 {currentCards.map(result => (
                   <div
                     key={result.PART_NO}
-                    onClick={() => handleCardClick(result.ROWID)}
+                    onClick={() => handleCardClick(result.ID)}
                     className="cursor-pointer"
                   >
                     <Card
@@ -124,7 +126,7 @@ export default function Page() {
                       <div className="card-actions justify-end mt-2">
                         <Badge
                           count={`${result.STOCK} pcs.`}
-                          style={{ backgroundColor: '#4784E9' }}
+                          style={{ backgroundColor: result.STOCK === 0 ? '#FF4000' : '#4784E9' }}
                         />
                       </div>
                     </Card>

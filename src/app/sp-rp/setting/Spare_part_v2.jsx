@@ -1,7 +1,7 @@
 'use client'
 import useStore from '@/lib/store'
 import { useState, useEffect, useRef } from 'react'
-import { Table, Upload, Button, Input, Select, Spin } from 'antd'
+import { Table, Upload, Button, Input, Select, Spin, Progress } from 'antd'
 import { UploadOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { width } from '@mui/system'
 import ExcelJS from 'exceljs'
@@ -17,6 +17,7 @@ export default function Spare_part({ department }) {
     const [attachedFile, setAttachedFile] = useState(null)
     const [isUpdating, setIsUpdating] = useState(false)
     const [fileInputValue, setFileInputValue] = useState('')
+    const [progress, setProgress] = useState(0)
 
     const {
         data_24: Data_TB,
@@ -450,22 +451,23 @@ export default function Spare_part({ department }) {
     }
 
     const handleUpdate = async () => {
-        if (!attachedFile) return
+        if (!attachedFile) return;
 
-        setIsUpdating(true) // Set loading state to true
+        setIsUpdating(true);
+        setProgress(0);
 
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onload = async (e) => {
-            const buffer = e.target.result
-            const workbook = new ExcelJS.Workbook()
-            await workbook.xlsx.load(buffer)
-            const worksheet1 = workbook.getWorksheet(1)
+            const buffer = e.target.result;
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(buffer);
+            const worksheet1 = workbook.getWorksheet(1);
 
-            let completedCalls = 0
-            const totalCalls = worksheet1.actualRowCount - 1 // Subtract header row
+            let completedCalls = 0;
+            const totalCalls = worksheet1.actualRowCount - 1;
 
             worksheet1.eachRow(async (row, rowNumber) => {
-                if (rowNumber === 1) return // Skip header row
+                if (rowNumber === 1) return; // Skip header row
 
                 let requestData = {
                     id: row.getCell('A').value,
@@ -475,29 +477,31 @@ export default function Spare_part({ department }) {
                     group: row.getCell('H').value || '0',
                     location: row.getCell('I').value || '0',
                     remark: row.getCell('J').value || '0',
-                }
+                };
 
                 try {
-                    await fetchData_40(requestData)
-                    completedCalls++
+                    await fetchData_40(requestData);
+                    completedCalls++;
+
+                    setProgress((completedCalls / totalCalls) * 100);
 
                     if (completedCalls === totalCalls) {
-                        setIsUpdating(false)
-                        setAttachedFile(null)
-                        setFileInputValue('')
+                        setIsUpdating(false);
+                        setAttachedFile(null);
+                        setFileInputValue('');
 
                         if (modalRef.current) {
-                            modalRef.current.close()
+                            modalRef.current.close();
                         }
 
-                        await fetch_TB(department, cccId)
+                        await fetch_TB(department, cccId);
                     }
                 } catch (error) {
-                    console.error("Error in fetchData_40:", error)
+                    console.error("Error in fetchData_40:", error);
                 }
-            })
-        }
-        reader.readAsArrayBuffer(attachedFile)
+            });
+        };
+        reader.readAsArrayBuffer(attachedFile);
     }
 
     return (
@@ -549,12 +553,13 @@ export default function Spare_part({ department }) {
 
                         <div className="modal-action">
                             {isUpdating ? (
-                                <Spin className='mt-2 me-5' size="large" />
+                                <Progress className='mt-3' percent={Math.round(progress)} />
                             ) : (
                                 attachedFile && (
                                     <button className="btn btn-accent me-3" onClick={handleUpdate}>Update</button>
                                 )
                             )}
+
                             <form method="dialog">
                                 <button className="btn">Close</button>
                             </form>

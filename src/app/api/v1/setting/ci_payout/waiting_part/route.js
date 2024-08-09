@@ -41,7 +41,9 @@ export async function POST(req) {
                 T7.NAME_TYPE,
                 T1.CCC,
                 T8.PERIOD,
-                T8.BUDGET_NO
+                T8.BUDGET_NO,
+                T4.PD,
+                T1.REMARK
             FROM
                 F17_05_SPRP_REQ_HIS T1
             JOIN 
@@ -108,6 +110,8 @@ export async function POST(req) {
                 EMP_NAME: emp_name,
                 BUDGET_PERIOD: row[15],
                 BUDGET_NO: row[16],
+                PRODUCT: row[17],
+                REMARK: row[18],
             }
         }))
 
