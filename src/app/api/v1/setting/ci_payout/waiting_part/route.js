@@ -35,7 +35,7 @@ export async function POST(req) {
                 T2.LOCATION,
                 T2.UNIT,
                 T3.CCC_NAME,
-                T4.PD_GROUP,
+                T9.PD_GROUP,
                 T5.MC_NAME,
                 T6.MN_CODE,
                 T7.NAME_TYPE,
@@ -43,15 +43,16 @@ export async function POST(req) {
                 T8.PERIOD,
                 T8.BUDGET_NO,
                 T4.PD,
-                T1.REMARK
+                T1.REMARK,
+                T9.PD AS PD_FROM
             FROM
                 F17_05_SPRP_REQ_HIS T1
             JOIN 
                 F17_05_SPRP_PART_LIST T2 ON T1.PART_ID = T2.ID
             JOIN 
                 F17_00_COMMON_CCC T3 ON T2.CCC_ID = T3.ID
-            JOIN 
-                F17_00_COMMON_PD T4 ON T4.ID = T3.ID
+            LEFT JOIN 
+                F17_00_COMMON_PD T4 ON T1.PD_ID = T4.ID
             LEFT JOIN 
                 F17_05_SPRP_MC T5 ON T5.ID = T1.MC_ID
             JOIN 
@@ -60,8 +61,10 @@ export async function POST(req) {
                 F17_05_SPRP_REQ_TYPE T7 ON T7.ID = T1.REQ_TYPE_ID
             LEFT JOIN  
                 F17_00_COMMON_EXP_BUDGET T8 ON T8.ID = T1.BUDGET_ID
+            LEFT JOIN 
+                F17_00_COMMON_PD T9 ON T2.PD_ID = T9.ID
             WHERE 
-                T4.DPM = :department
+                T9.DPM = :department
             AND 
                 T1.ADMIN_JDM_STATUS IS NULL
             `,
@@ -112,6 +115,7 @@ export async function POST(req) {
                 BUDGET_NO: row[16],
                 PRODUCT: row[17],
                 REMARK: row[18],
+                PD_FROM: row[19],
             }
         }))
 

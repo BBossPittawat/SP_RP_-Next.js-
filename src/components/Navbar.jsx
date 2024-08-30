@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { TextField, Autocomplete } from '@mui/material'
 import { useRouter } from 'next/navigation'

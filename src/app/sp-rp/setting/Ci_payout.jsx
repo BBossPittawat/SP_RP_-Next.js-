@@ -149,57 +149,82 @@ export default function Ci_payout({ department }) {
 
     const columns = [
         {
-            title: <div style={{ fontSize: '12px' }}>CCC FROM</div>,
+            title: <div style={{ fontSize: '10px' }}>CCC FROM</div>,
             dataIndex: 'CCC_NAME',
             key: 'CCC_NAME',
             filters: getColumnFilters('CCC_NAME'),
             onFilter: (value, record) => record.CCC_NAME.includes(value),
             align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
         },
         {
-            title: <div style={{ fontSize: '12px' }}>CCC TO</div>,
+            title: <div style={{ fontSize: '10px' }}>PD FROM</div>,
+            dataIndex: 'PD_FROM',
+            key: 'PD_FROM',
+            filters: getColumnFilters('PD_FROM'),
+            onFilter: (value, record) => record.PD_FROM && record.PD_FROM.includes(value),
+            align: 'center',
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
+        },
+        {
+            title: <div style={{ fontSize: '10px' }}>CCC TO</div>,
             dataIndex: 'CCC_ISSU_TO',
             key: 'CCC_ISSU_TO',
             filters: getColumnFilters('CCC_ISSU_TO'),
             onFilter: (value, record) => record.CCC_ISSU_TO && record.CCC_ISSU_TO.includes(value),
             align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
         },
         {
-            title: <div style={{ fontSize: '12px' }}>ACC</div>,
+            title: <div style={{ fontSize: '10px' }}>PD TO</div>,
+            dataIndex: 'PRODUCT',
+            key: 'PRODUCT',
+            filters: getColumnFilters('PRODUCT'),
+            onFilter: (value, record) => record.PRODUCT && record.PRODUCT.includes(value),
+            align: 'center',
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
+        },
+        {
+            title: <div style={{ fontSize: '10px' }}>ACC</div>,
             dataIndex: 'ACC',
             key: 'ACC',
             filters: getColumnFilters('ACC'),
             onFilter: (value, record) => record.ACC === value,
             align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
         },
         {
-            title: <div style={{ fontSize: '12px' }}>BUDGET PERIOD</div>,
+            title: <div style={{ fontSize: '10px' }}>BUDGET PERIOD</div>,
             dataIndex: 'BUDGET_PERIOD',
             key: 'BUDGET_PERIOD',
             filters: getColumnFilters('BUDGET_PERIOD'),
             onFilter: (value, record) => record.BUDGET_PERIOD && record.BUDGET_PERIOD.includes(value),
             align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
         },
         {
-            title: <div style={{ fontSize: '12px' }}>BUDGET NO.</div>,
+            title: <div style={{ fontSize: '10px' }}>BUDGET NO.</div>,
             dataIndex: 'BUDGET_NO',
             key: 'BUDGET_NO',
             filters: getColumnFilters('BUDGET_NO'),
             onFilter: (value, record) => record.BUDGET_NO && record.BUDGET_NO.includes(value),
             align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
         },
         {
-            title: <div style={{ fontSize: '12px' }}>PART NAME</div>,
+            title: <div style={{ fontSize: '10px' }}>PART NAME</div>,
             key: 'PART_NAME',
             align: 'center',
-            width: 200,
+            width: 30,
             render: (text, record) => (
-                <div style={{ fontSize: '12px' }}>
+                <div style={{ fontSize: '10px' }}>
                     <span style={{ color: 'black' }}>{record.PART_NO}</span><br />
                     <span style={{ color: 'gray' }}>{record.SPEC}</span>
                 </div>
@@ -208,32 +233,25 @@ export default function Ci_payout({ department }) {
             onFilter: (value, record) => record.PART_NO.includes(value) || record.SPEC.includes(value)
         },
         {
-            title: <div style={{ fontSize: '12px' }}>QTY</div>,
+            title: <div style={{ fontSize: '10px' }}>QTY</div>,
             dataIndex: 'QTY',
             key: 'QTY',
             filters: getColumnFilters('QTY'),
             onFilter: (value, record) => record.QTY === value,
             align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
+            width: 5,
+            render: text => <div style={{ fontSize: '10px' }}>{text}</div>
         },
-        {
-            title: <div style={{ fontSize: '12px' }}>Unit</div>,
-            dataIndex: 'UNIT',
-            key: 'UNIT',
-            filters: getColumnFilters('UNIT'),
-            onFilter: (value, record) => record.UNIT.includes(value),
-            align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
-        },
-        {
-            title: <div style={{ fontSize: '12px' }}>PD</div>,
-            dataIndex: 'PRODUCT',
-            key: 'PRODUCT',
-            filters: getColumnFilters('PRODUCT'),
-            onFilter: (value, record) => record.PRODUCT && record.PRODUCT.includes(value),
-            align: 'center',
-            render: text => <div style={{ fontSize: '12px' }}>{text}</div>
-        },
+        // {
+        //     title: <div style={{ fontSize: '12px' }}>Unit</div>,
+        //     dataIndex: 'UNIT',
+        //     key: 'UNIT',
+        //     filters: getColumnFilters('UNIT'),
+        //     onFilter: (value, record) => record.UNIT.includes(value),
+        //     align: 'center',
+        //     render: text => <div style={{ fontSize: '12px' }}>{text}</div>
+        // },
+
 
         {
             title: <div style={{ fontSize: '12px' }}>MC</div>,
@@ -242,6 +260,7 @@ export default function Ci_payout({ department }) {
             filters: getColumnFilters('MC_NAME'),
             onFilter: (value, record) => record.MC_NAME && record.MC_NAME.includes(value),
             align: 'center',
+            width: 10,
             render: text => <div style={{ fontSize: '12px' }}>{text}</div>
         },
         {
@@ -251,6 +270,7 @@ export default function Ci_payout({ department }) {
             filters: getColumnFilters('MN_CODE'),
             onFilter: (value, record) => record.MN_CODE.includes(value),
             align: 'center',
+            width: 5,
             render: text => <div style={{ fontSize: '12px' }}>{text}</div>
         },
         {
@@ -259,6 +279,7 @@ export default function Ci_payout({ department }) {
             key: 'LOCATION',
             filters: getColumnFilters('LOCATION'),
             onFilter: (value, record) => record.LOCATION.includes(value),
+            width: 5,
             align: 'center',
             render: text => <div style={{ fontSize: '12px' }}>{text}</div>
         },
@@ -266,6 +287,7 @@ export default function Ci_payout({ department }) {
             title: <div style={{ fontSize: '12px' }}>REQ.</div>,
             key: 'REQUEST',
             align: 'center',
+            width: 15,
             render: (text, record) => (
                 <div style={{ fontSize: '12px' }}>
                     <span>{moment(record.DTE_REQ).format('DD-MMM-YY HH:mm')}</span><br />
@@ -285,12 +307,14 @@ export default function Ci_payout({ department }) {
             filters: getColumnFilters('REMARK'),
             onFilter: (value, record) => record.REMARK.includes(value),
             align: 'center',
+            width: 5,
             render: text => <div style={{ fontSize: '12px' }}>{text}</div>
         },
         {
             title: '',
             key: '',
             align: '',
+            width: 5,
             render: (text, record) => (
                 <div className="flex flex-col items-center space-y-2">
                     {/* <Popconfirm
@@ -307,7 +331,7 @@ export default function Ci_payout({ department }) {
                         okText="Yes"
                         cancelText="No"
                     >
-                        <Button className='btn btn-sm btn-error'>Reject</Button>
+                        <Button className='btn btn-sm btn-error'>RJ.</Button>
                     </Popconfirm>
                 </div>
             )
@@ -319,6 +343,11 @@ export default function Ci_payout({ department }) {
     return (
         <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
+
+                {/* <button className="btn" onClick={() => document.getElementById('my_modal').showModal()}>Open detail</button>
+                <dialog id="my_modal" className="modal modal-fullscreen"> */}
+                {/* <div className="modal-box w-full h-full max-w-none"> */}
+
                 <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-2">
                         <h2 className="card-title">CI Payout</h2>
@@ -327,6 +356,7 @@ export default function Ci_payout({ department }) {
                             Refresh
                         </button>
                     </div>
+
                     <Popconfirm
                         title="Are you sure to CI Pay-out all?"
                         onConfirm={handleAllCIPayout}
@@ -341,6 +371,7 @@ export default function Ci_payout({ department }) {
                         }
                     </Popconfirm>
                 </div>
+
                 <Table
                     className='mt-2'
                     columns={columns}
@@ -349,7 +380,35 @@ export default function Ci_payout({ department }) {
                     rowKey="ID"
                     rowClassName={rowClassName}
                 />
+
+                <div className="modal-action">
+                    <form method="dialog">
+                        {/* if there is a button in form, it will close the modal */}
+                        <button className="btn">Close</button>
+                    </form>
+                </div>
+                {/* </div> */}
+                {/* </dialog> */}
+
+
+
+
+
             </div>
+
+            <style jsx global>{`
+                .modal-fullscreen .modal-box {
+                    width: 100%;
+                    height: 100%;
+                    max-width: none;
+                }
+                .custom-popconfirm .ant-popover-content {
+                    z-index: 1050; /* Ensure it is above the modal */
+                }
+            `}</style>
+
         </div>
+
+
     )
 }

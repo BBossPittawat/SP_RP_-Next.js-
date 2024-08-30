@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Checkbox, Alert, Select, Spin, Button } from 'antd'
 import useStore from '@/lib/store'
 
-export default function Sidebar({ onSearch }) {
+export default function Sidebar({ onSearch, onDepartmentChange }) {
 
     const [checkedList, setCheckedList] = useState([])
     const [checkAll, setCheckAll] = useState(false)
@@ -41,6 +41,7 @@ export default function Sidebar({ onSearch }) {
             fetchProducts(jwtData.payload.department)
             fetchGroups()
             fetchMachines(jwtData.payload.department, '')
+            onDepartmentChange(selectedDepartment)
         }
     }, [jwtData, fetchDepartments, fetchProducts, fetchGroups, fetchMachines])
 
@@ -51,15 +52,15 @@ export default function Sidebar({ onSearch }) {
             setCheckAll(true)
         }
     }, [groupsData])
-
     //-------------------------------------------------------------------------------------------------  Change trigger
 
-    const onDepartmentChange = (department) => {
+    const handleDepartmentChange = (department) => {
         setSelectedDepartment(department)
         setSelectedProduct('')
         setSelectedMachine('')
         fetchProducts(department)
         fetchMachines(department, '')
+        onDepartmentChange(department)
     }
 
     const onProductChange = (product) => {
@@ -118,9 +119,10 @@ export default function Sidebar({ onSearch }) {
                                 showSearch
                                 placeholder="Select a department"
                                 value={selectedDepartment}
-                                onChange={onDepartmentChange}
+                                onChange={handleDepartmentChange}
                                 options={departments?.map(dep => ({ value: dep, label: dep }))}
                                 className="text-center mt-2"
+                                style={{ width: '150px' }}
                             />
                         </>
                     )}
@@ -140,6 +142,7 @@ export default function Sidebar({ onSearch }) {
                                 onChange={onProductChange}
                                 options={productsData?.map(prod => ({ value: prod.id, label: prod.product }))}
                                 className="text-center mt-2"
+                                style={{ width: '150px' }}
                             />
                         </>
                     )}
@@ -160,9 +163,10 @@ export default function Sidebar({ onSearch }) {
                                 options={
                                     errorMachines || !machinesData || machinesData.length === 0
                                         ? [{ value: 'no_data', label: 'No Data' }]
-                                        : machinesData.map(machine => ({ value: machine.id, label: machine.machine }))
+                                        : [{ value: 'ALL', label: 'ALL' }, ...machinesData.map(machine => ({ value: machine.id, label: machine.machine }))]
                                 }
                                 className="text-center mt-2"
+                                style={{ width: '150px' }}
                             />
                         </>
                     )}

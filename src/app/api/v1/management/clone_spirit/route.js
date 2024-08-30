@@ -46,7 +46,7 @@ export async function POST(req) {
           ROUND(T1.TK00051,2) AS LAST_PRICE,
           T1.CD00127 AS UNIT,
           T1.CD06355 AS CUR,
-          T1.NI00010 AS LT,
+          T1.NI00010 AS LT, 
           T1.SU00357 AS MOQ,
           T1.CD00426 AS VENDER_CODE,
           T2.DH00067 AS VERDER_NAME,
@@ -59,8 +59,6 @@ export async function POST(req) {
           T1.CD00059 IN (${cccList})
         AND
           T1.CD06355 IS NOT NULL
-      --AND 
-      -- 	T1.SU00355 <> 0
         AND 
           T1.CD00042A = '64422'
         AND (
@@ -115,7 +113,9 @@ export async function POST(req) {
         PRICE: Number(row[6]).toFixed(2),
         CURR: row[8],
         UNIT: row[7],
-        STOCK: Number(row[3])
+        STOCK: Number(row[3]),
+        OP: row[4] || 0,
+        OQ: row[5] || 0
       }
     })
 
@@ -155,14 +155,16 @@ export async function POST(req) {
 
       const stockItem = mt200_stock.find(stock => stock.CCC_ID === item.CCC_ID && stock.PART_NO === item.PART_NO)
 
+      // console.log(stockItem.STOCK)
+
       if (!stockItem) {
         // --------------------------------------------------------------------  Insert data that nothing in mt200db
         await conn4.execute(
           `
             INSERT INTO F17_05_SPRP_PART_LIST (
-              CCC_ID, PART_NO, SPEC, PRICE, CURR, UNIT, STOCK
+              CCC_ID, PART_NO, SPEC, PRICE, CURR, UNIT, STOCK , OP , OQ
             ) VALUES (
-              :CCC_ID, :PART_NO, :SPEC, :PRICE, :CURR, :UNIT, :STOCK
+              :CCC_ID, :PART_NO, :SPEC, :PRICE, :CURR, :UNIT, :STOCK , :OP , :OQ
             )
             `,
           [
@@ -172,7 +174,9 @@ export async function POST(req) {
             item.PRICE,
             item.CURR,
             item.UNIT,
-            item.STOCK
+            item.STOCK,
+            item.OP,
+            item.OQ
           ]
         )
       }
@@ -181,11 +185,15 @@ export async function POST(req) {
         await conn4.execute(
           `
             UPDATE F17_05_SPRP_PART_LIST
-            SET STOCK=:STOCK 
+            SET STOCK = :STOCK,
+                OP = :OP,
+                OQ = :OQ
             WHERE CCC_ID=:CCC_ID 
             AND PART_NO=:PART_NO
             `,
           [item.STOCK.toFixed(2),
+          item.OP,
+          item.OQ,
           item.CCC_ID.toFixed(2),
           item.PART_NO]
         )
@@ -194,6 +202,17 @@ export async function POST(req) {
     }
 
     await conn4.commit()
+
+    await conn4.execute(
+      `
+        UPDATE F17_05_SPRP_REQ_HIS  
+        SET ADMIN_JDM_STATUS = 3  
+        WHERE ADMIN_JDM_STATUS = 1
+      `
+    )
+
+    await conn4.commit()
+
     return NextResponse.json({ message: 'Data update successfully' })
 
   } catch (error) {

@@ -3,7 +3,6 @@ import useStore from '@/lib/store'
 import { useState, useEffect, useRef } from 'react'
 import { Table, Upload, Button, Input, Select, Spin, Progress } from 'antd'
 import { UploadOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import { width } from '@mui/system'
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 
@@ -477,27 +476,27 @@ export default function Spare_part({ department }) {
                     group: row.getCell('H').value || '0',
                     location: row.getCell('I').value || '0',
                     remark: row.getCell('J').value || '0',
-                };
+                }
 
                 try {
-                    await fetchData_40(requestData);
-                    completedCalls++;
+                    await fetchData_40(requestData)
+                    completedCalls++
 
-                    setProgress((completedCalls / totalCalls) * 100);
+                    setProgress((completedCalls / totalCalls) * 100)
 
                     if (completedCalls === totalCalls) {
-                        setIsUpdating(false);
-                        setAttachedFile(null);
-                        setFileInputValue('');
+                        setIsUpdating(false)
+                        setAttachedFile(null)
+                        setFileInputValue('')
 
                         if (modalRef.current) {
-                            modalRef.current.close();
+                            modalRef.current.close()
                         }
 
                         await fetch_TB(department, cccId);
                     }
                 } catch (error) {
-                    console.error("Error in fetchData_40:", error);
+                    console.error("Error in fetchData_40:", error)
                 }
             });
         };

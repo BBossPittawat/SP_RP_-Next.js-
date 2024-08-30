@@ -1,0 +1,1 @@
+{"timestamp":1724813754499,"data":[{"GROUP_ID":1,"GROUP":"Machanical"},{"GROUP_ID":2,"GROUP":"Electrical"},{"GROUP_ID":3,"GROUP":"Pneumatic"},{"GROUP_ID":4,"GROUP":"Hydrolic"},{"GROUP_ID":5,"GROUP":"Chemical"},{"GROUP_ID":6,"GROUP":"Making parts"},{"GROUP_ID":7,"GROUP":"Other"}]}

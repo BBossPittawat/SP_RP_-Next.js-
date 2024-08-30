@@ -43,14 +43,26 @@ export default function Page() {
   if (error_10) return <Alert message="Error" description={error_10} type="error" showIcon />
 
   const tableRows = [
-    { label: "Part no.", value: data_10[0].PART_NO },
-    { label: "Spec", value: data_10[0].SPEC },
-    { label: "Price", value: `${data_10[0].PRICE} ${data_10[0].CURR}` },
-    { label: "Unit", value: data_10[0].UNIT },
-    { label: "Product", value: data_10[0].PD },
-    { label: "Machine", value: data_10[0].MC_NAME },
-    { label: "Location", value: data_10[0].LOCATION },
-    { label: "Stock", value: data_10[0].STOCK }
+    { label: "Part no.", value: data_10[0]?.PART_NO || '-' },
+    { label: "Spec", value: data_10[0]?.SPEC || '-' },
+    { label: "Price", value: `${data_10[0]?.SHOW_PRICE || '-'} ${data_10[0]?.CURR || ''}` },
+    // { label: "Unit", value: data_10[0]?.UNIT || '-' },
+    { label: "Product", value: data_10[0]?.PD || '-' },
+    { label: "Machine", value: data_10[0]?.MC_NAME || '-' },
+    { label: "Location", value: data_10[0]?.LOCATION || '-' },
+    { label: "Stock", value: `${data_10[0]?.SHOW_STOCK || '-'} ${data_10[0]?.UNIT || '-'}` },
+    {
+      label: "OP / OQ",
+      value:
+        `${data_10[0]?.OP ?? '-'} / ${data_10[0]?.OQ ?? '-'}`
+    }
+  ]
+
+  const BL_Rows = [
+    { label: "Order date", value: data_10[0].BL_ORDERDTE },
+    { label: "Vender promise date", value: data_10[0].BL_PDDT },
+    { label: "Qty", value: `${data_10[0].BL_PDQTY}` },
+    { label: "Vender name", value: data_10[0].BL_VNDNAME },
   ]
 
   const part_section = parseInt(data_10[0]?.DEPT?.substring(2, 3))
@@ -74,13 +86,56 @@ export default function Page() {
         </figure>
 
         <div className="card-body">
+
+          {data_10[0].BL_ORDERDTE &&
+            <button className="btn btn-sm bg-blue-400" onClick={() => document.getElementById('my_modal_1').showModal()}>Backlog detail</button>
+          }
+
+          <dialog id="my_modal_1" className="modal">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">BACKLOG</h3>
+
+              <table className="table text-base mt-3">
+
+                <tbody>
+
+                  {BL_Rows.map((row, index) => {
+                    let row_bl_Class = ""
+                    if (index === 0) row_bl_Class = "bg-blue-400 border-y-4 border-gray-500"
+                    else if (index === BL_Rows.length - 1) row_bl_Class = "border-b-4 border-gray-500"
+                    else if (index % 2 === 0) row_bl_Class = "bg-blue-400"
+
+                    return (
+                      <tr key={index} className={row_bl_Class}>
+                        <th>{row.label}</th>
+                        <td>{row.value}</td>
+                      </tr>
+                    )
+                  })}
+
+                </tbody>
+
+              </table>
+
+              <div className="modal-action">
+                <form method="dialog">
+                  <button className="btn">Close</button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+
           <table className="table text-base">
+
             <tbody>
+
               {tableRows.map((row, index) => {
-                let rowClass = ""
+                let rowClass = index % 2 === 0 ? 'bg-yellow-400' : 'bg-white'
                 if (index === 0) rowClass = "bg-yellow-400 border-y-4 border-gray-500"
-                else if (index === tableRows.length - 1) rowClass = "border-b-4 border-gray-500"
-                else if (index % 2 === 0) rowClass = "bg-yellow-400"
+                if (index === tableRows.length - 1) rowClass = "border-b-4 border-gray-500"
+                // else if (index % 2 === 0) rowClass = 'bg-yellow-400'
+
+                // let rowClass = index % 2 === 0 ? 'bg-yellow-400' : 'bg-white'
 
                 return (
                   <tr key={index} className={rowClass}>
@@ -89,7 +144,9 @@ export default function Page() {
                   </tr>
                 )
               })}
+
             </tbody>
+
           </table>
 
           {data_10[0].REMARK &&

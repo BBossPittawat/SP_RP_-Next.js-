@@ -1,22 +1,21 @@
 'use client'
 import Image from "next/image"
-import { Input, Button, Select, Spin } from 'antd'
+import { Spin } from 'antd'
 import { useEffect, useState } from 'react'
 import useStore from '@/lib/store'
 
 export default function Navbar() {
-
     const {
         data_2: DT2,
         fetchData_2: FetchDT2,
         loading_2: LoadingDT2,
         data_18: tableData,
         fetchData_18: fetchTableData,
-        // loading_18: loadingTableData,
         error_18: ErrDT18
     } = useStore()
 
     const [Department, setDepartment] = useState(null)
+    const [localTableData, setLocalTableData] = useState(tableData)
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -25,15 +24,6 @@ export default function Navbar() {
         }
     }, [])
 
-    // console.log(Department)
-
-    // const [selectedDepartment, setSelectedDepartment] = useState('')
-
-    // const onDepartmentChange = (value) => {
-    //     setSelectedDepartment(value)
-    //     fetchTableData(value)
-    // }
-
     useEffect(() => {
         FetchDT2()
     }, [FetchDT2])
@@ -41,14 +31,41 @@ export default function Navbar() {
     useEffect(() => {
         let interval
         if (Department) {
+            fetchTableData(Department)
             interval = setInterval(() => {
                 fetchTableData(Department)
-                console.log("timer trigger")
-            }, 5000) // 5 sec timer
+            }, 10000) // 10 sec timer
         }
-
         return () => clearInterval(interval)
     }, [Department, fetchTableData])
+
+    // Sync localTableData with tableData
+    useEffect(() => {
+        setLocalTableData(tableData)
+    }, [tableData])
+
+    // Combine error handling and state setting in one effect
+    useEffect(() => {
+        if (ErrDT18) {
+            // console.log("tableData before setting null:", tableData)
+            useStore.setState({ tableData: null })
+            // console.error("Error fetching table data:", ErrDT18)
+            // console.log("tableData after setting null:", tableData)
+        }
+    }, [ErrDT18])
+
+    useEffect(() => {
+        let interval_alert
+
+        interval_alert = setInterval(() => {
+            if (localTableData && localTableData.some(row => row.RECENTLY === 1)) {
+                const audio = new Audio('/Alert/alert.mp3')
+                audio.play()
+            }
+        }, 5000) // 1 minute timer
+
+        return () => clearInterval(interval_alert)
+    }, [localTableData])
 
     return (
         <>
@@ -93,16 +110,6 @@ export default function Navbar() {
                     ) : (
                         <>
                             <span className="text-3xl mr-4 font-bold text-white">{Department}</span>
-                            {/* <Select
-                                showSearch
-                                placeholder="department"
-                                value={selectedDepartment || undefined}
-                                onChange={onDepartmentChange}
-                                options={DT2?.map(dep => ({ value: dep, label: dep }))}
-                                className="text-center mt-2"
-                                style={{ width: '150px', height: '40px', fontSize: '16px' }}
-                                size="large"
-                            /> */}
                         </>
                     )}
 
@@ -123,30 +130,30 @@ export default function Navbar() {
                     </thead>
                     <tbody>
 
-                        {!ErrDT18 && tableData && tableData.map((row, index) => (
-                            // Apply blinking effect if RECENTLY is 1
-                            <tr key={index} className={row.RECENTLY === 1 ? "blinking-text" : ""}>
-                                <td>{row.REQ_DATE}</td>
-                                <td>{row.LOC}</td>
-                                <td>{row.PART_NO}</td>
-                                <td>{row.QTY}</td>
-                                <td>
-                                    {row.REQ_PIC && (
-                                        <>
-                                            {row.REQ_PIC}
-                                            <br />
-                                        </>
-                                    )}
-                                    {row.EMP_NAME}
-                                </td>
-                                <td>{row.REMARK}</td>
-                            </tr>
-                        ))
-                        }
-
-                        {ErrDT18 && (
+                        {ErrDT18 ? (
                             <tr><td colSpan="6">No Data Available</td></tr>
+
+                        ) : (
+                            localTableData && localTableData.map((row, index) => (
+                                <tr key={index} className={row.RECENTLY === 1 ? "blinking-text" : ""}>
+                                    <td>{row.REQ_DATE}</td>
+                                    <td>{row.LOC}</td>
+                                    <td>{row.PART_NO}</td>
+                                    <td>{row.QTY}</td>
+                                    <td>
+                                        {row.REQ_PIC && (
+                                            <>
+                                                {row.REQ_PIC}
+                                                <br />
+                                            </>
+                                        )}
+                                        {row.EMP_NAME}
+                                    </td>
+                                    <td>{row.REMARK}</td>
+                                </tr>
+                            ))
                         )}
+
                     </tbody>
                 </table>
             </div>

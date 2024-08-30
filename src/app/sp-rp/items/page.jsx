@@ -13,6 +13,8 @@ export default function Page() {
   const [searchResults, setSearchResults] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 21
+  const [selectedDepartment, setSelectedDepartment] = useState('')
+  const [isBacklogFiltered, setIsBacklogFiltered] = useState(false)
 
   const { data_8, loading_8, error_8, fetchData_8 } = useStore()
 
@@ -37,29 +39,43 @@ export default function Page() {
   }
 
   const monitorPageClick = () => {
-    window.open(`/sp-rp/monitor`, '_blank')
+    if (!selectedDepartment) setSelectedDepartment('MT200')
+    window.open(`/sp-rp/monitor?dept=${selectedDepartment}`, '_blank')
   }
 
   const handlePageChange = (page) => {
     setCurrentPage(page)
   }
 
+  const filteredResults = isBacklogFiltered
+    ? searchResults.filter(result => result.BL_ORDERDTE)
+    : searchResults
+
   const startIndex = (currentPage - 1) * pageSize
-  const currentCards = searchResults.slice(startIndex, startIndex + pageSize)
+  const currentCards = filteredResults.slice(startIndex, startIndex + pageSize)
 
   return (
     <>
       <Navbar />
       <div className='flex flex-row'>
-        <Sidebar onSearch={handleSearch} />
+        <Sidebar onSearch={handleSearch} onDepartmentChange={setSelectedDepartment} />
         <div className='basis-full p-3'>
 
           <div className='flex items-center rounded-xl bg-gray-300 h-14 justify-between pl-3 pr-3'>
             <div className='flex items-center space-x-3'>
               <div className='text-xm font-bold text-gray-600'>source by</div>
-              <button className='btn bg-white btn-sm text-xs block text-gray-500'>
-                <div>often</div>
+              <button className='btn bg-white btn-sm text-xs block text-gray-600 bg-blue-200'>
+                <div>a - z</div>
               </button>
+
+              {searchResults.some(result => result.BL_ORDERDTE) && (
+                <button
+                  className={`btn btn-sm text-xs block ${isBacklogFiltered ? 'bg-blue-200 text-gray-600' : 'bg-white text-gray-500'}`}
+                  onClick={() => setIsBacklogFiltered(prev => !prev)}
+                >
+                  <div>backlog</div>
+                </button>
+              )}
             </div>
 
             <button
@@ -67,9 +83,12 @@ export default function Page() {
               className="btn btn-sm btn-info"
               onClick={monitorPageClick}
             >
+
               <MonitorOutlined />
               Monitoring
             </button>
+
+
 
           </div>
 
@@ -97,51 +116,90 @@ export default function Page() {
                     onClick={() => handleCardClick(result.ID)}
                     className="cursor-pointer"
                   >
-                    <Card
-                      className="shadow-xl"
-                      cover={
-                        result.IMG_URL ? (
-                          <Image
-                            src={result.IMG_URL}
-                            alt={result.PART_NO}
-                            height={120}
-                            preview={false}
-                            className='p-1'
+                    {!!result.BL_ORDERDTE ? (
+                      <Badge.Ribbon text="Backlog" color="#FFB200" >
+                        <Card
+                          className="shadow-xl "
+                          cover={
+                            result.IMG_URL ? (
+                              <Image
+                                src={result.IMG_URL}
+                                alt={result.PART_NO}
+                                height={120}
+                                preview={false}
+                                className='p-1'
+                              />
+                            ) : (
+                              <Image
+                                className='p-1'
+                                src="/Image/no_img.jpg"
+                                height={120}
+                                preview={false}
+                                alt="Description of image"
+                              />
+                            )
+                          }
+                        >
+                          <Meta
+                            title={<p className="truncate text-base font-bold">{result.PART_NO}</p>}
+                            description={<p className='truncate'>{result.SPEC}</p>}
                           />
-                        ) : (
-                          <Image
-                            className='p-1'
-                            src="/Image/no_img.jpg"
-                            height={120}
-                            preview={false}
-                            alt="Description of image"
-                          />
-                        )
-                      }
-                    >
-                      <Meta
-                        title={<p className="truncate text-base font-bold">{result.PART_NO}</p>}
-                        description={<p className='truncate'>{result.SPEC}</p>}
-                      />
-                      <div className="card-actions justify-end mt-2">
-                        <Badge
-                          count={`${result.STOCK} pcs.`}
-                          style={{ backgroundColor: result.STOCK === 0 ? '#FF4000' : '#4784E9' }}
+                          <div className="card-actions justify-end mt-2">
+                            <Badge
+                              count={`${result.SHOW_STOCK} pcs.`}
+                              style={{ backgroundColor: result.STOCK === 0 ? '#FF4000' : '#4784E9' }}
+                            />
+                          </div>
+                        </Card>
+                      </Badge.Ribbon>
+                    ) : (
+                      <Card
+                        className="shadow-xl"
+                        cover={
+                          result.IMG_URL ? (
+                            <Image
+                              src={result.IMG_URL}
+                              alt={result.PART_NO}
+                              height={120}
+                              preview={false}
+                              className='p-1'
+                            />
+                          ) : (
+                            <Image
+                              className='p-1'
+                              src="/Image/no_img.jpg"
+                              height={120}
+                              preview={false}
+                              alt="Description of image"
+                            />
+                          )
+                        }
+                      >
+                        <Meta
+                          title={<p className="truncate text-base font-bold">{result.PART_NO}</p>}
+                          description={<p className='truncate'>{result.SPEC}</p>}
                         />
-                      </div>
-                    </Card>
+                        <div className="card-actions justify-end mt-2">
+                          <Badge
+                            count={`${result.SHOW_STOCK} pcs.`}
+                            style={{ backgroundColor: result.STOCK === 0 ? '#FF4000' : '#4784E9' }}
+                          />
+                        </div>
+                      </Card>
+                    )}
                   </div>
-
                 ))}
 
 
               </div>
 
-              {data_8 && (
+
+
+              {filteredResults.length > 0 && (
                 <Pagination
                   current={currentPage}
                   pageSize={pageSize}
-                  total={searchResults.length}
+                  total={filteredResults.length}
                   onChange={handlePageChange}
                   style={{ marginTop: '20px', textAlign: 'center' }}
                 />
@@ -150,7 +208,7 @@ export default function Page() {
             </>
           )}
         </div>
-      </div>
+      </div >
     </>
   )
 }
