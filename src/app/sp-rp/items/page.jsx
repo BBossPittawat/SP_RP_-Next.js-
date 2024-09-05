@@ -68,15 +68,29 @@ export default function Page() {
                 <div>a - z</div>
               </button>
 
-              {searchResults.some(result => result.BL_ORDERDTE) && (
+              {/* {searchResults.some(result => result.BL_ORDERDTE) && (
                 <button
                   className={`btn btn-sm text-xs block ${isBacklogFiltered ? 'bg-blue-200 text-gray-600' : 'bg-white text-gray-500'}`}
                   onClick={() => setIsBacklogFiltered(prev => !prev)}
                 >
                   <div>backlog</div>
                 </button>
-              )}
+              )} */}
             </div>
+
+            <button className="btn" onClick={() => document.getElementById('my_modal_1').showModal()}>open modal</button>
+            <dialog id="my_modal_1" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-lg">Hello!</h3>
+                <p className="py-4">Press ESC key or click the button below to close</p>
+                <div className="modal-action">
+                  <form method="dialog">
+                    {/* if there is a button in form, it will close the modal */}
+                    <button className="btn">Close</button>
+                  </form>
+                </div>
+              </div>
+            </dialog>
 
             <button
               type="button"

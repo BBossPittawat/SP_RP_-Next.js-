@@ -33,7 +33,7 @@ export default function Machine({ department }) {
 
     useEffect(() => {
         if (!data_33 && department) fetchData_33(department)
-    }, [department])
+    }, [department, data_33, fetchData_33])
 
     const uniqueCCC = [...new Set(data_33?.map(item => item.CCC))]
     const filteredProducts = data_33?.filter(item => item.CCC === selectedCCC)

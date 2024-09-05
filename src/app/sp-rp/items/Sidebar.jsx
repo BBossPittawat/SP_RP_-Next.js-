@@ -1,6 +1,6 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { Checkbox, Alert, Select, Spin, Button } from 'antd'
+import React, { useEffect, useState, useCallback } from 'react'
+import { Checkbox, Alert, Select, Spin } from 'antd'
 import useStore from '@/lib/store'
 
 export default function Sidebar({ onSearch, onDepartmentChange }) {
@@ -34,16 +34,20 @@ export default function Sidebar({ onSearch, onDepartmentChange }) {
         fetchJWT()
     }, [fetchJWT])
 
+    const handleFetch = useCallback((department) => {
+        fetchDepartments()
+        fetchProducts(department)
+        fetchGroups()
+        fetchMachines(department, '')
+        onDepartmentChange(department)
+    }, [fetchDepartments, fetchProducts, fetchGroups, fetchMachines, onDepartmentChange])
+
     useEffect(() => {
         if (jwtData?.payload?.department) {
             setSelectedDepartment(jwtData.payload.department)
-            fetchDepartments()
-            fetchProducts(jwtData.payload.department)
-            fetchGroups()
-            fetchMachines(jwtData.payload.department, '')
-            onDepartmentChange(selectedDepartment)
+            handleFetch(jwtData.payload.department)
         }
-    }, [jwtData, fetchDepartments, fetchProducts, fetchGroups, fetchMachines])
+    }, [jwtData, handleFetch])
 
     useEffect(() => {
         if (groupsData?.length > 0) {
@@ -58,9 +62,7 @@ export default function Sidebar({ onSearch, onDepartmentChange }) {
         setSelectedDepartment(department)
         setSelectedProduct('')
         setSelectedMachine('')
-        fetchProducts(department)
-        fetchMachines(department, '')
-        onDepartmentChange(department)
+        handleFetch(department)
     }
 
     const onProductChange = (product) => {

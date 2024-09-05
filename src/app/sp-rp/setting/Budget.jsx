@@ -55,7 +55,7 @@ export default function Budget({ department }) {
             fetchData_29(department)
             fetchData_30(department)
         }
-    }, [department])
+    }, [department, data_29, fetchData_29, fetchData_30])
 
     const columns = [
         {

@@ -23,7 +23,11 @@ export async function POST(req) {
         SELECT
             T1.ID,
             T6.DEPARTMENT,
-            T1.IMG,
+            CASE WHEN T1.IMG IS NOT NULL THEN
+                '1'
+            ELSE
+                NULL
+            END AS IMG,
             T1.PART_NO,
             T1.SPEC,
             T1.PRICE,

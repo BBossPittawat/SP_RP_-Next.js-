@@ -49,7 +49,8 @@ export async function POST(req) {
                 T1.ID, 
                 T1.ROWID, 
                 T2.CCC_NAME, 
-                T1.PART_NO
+                T1.PART_NO,
+                T1.SPEC
             FROM 
                 F17_05_SPRP_PART_LIST T1 
             JOIN 
@@ -70,7 +71,8 @@ export async function POST(req) {
             ID: row[0],
             ROWID: row[1],
             CCC: row[2],
-            PART_NO: row[3]
+            PART_NO: row[3],
+            SPEC: row[4]
         }))
 
         // update Cache Data  

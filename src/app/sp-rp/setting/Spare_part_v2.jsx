@@ -55,7 +55,7 @@ export default function Spare_part({ department }) {
 
     useEffect(() => {
         if (!ddl_ccc && department) fetch_ddl_ccc(department)
-    }, [department])
+    }, [department, ddl_ccc, fetch_ddl_ccc])
 
     const handleUploadChange = ({ fileList }, record) => {
         const file = fileList.length > 0 ? fileList[0].originFileObj : null

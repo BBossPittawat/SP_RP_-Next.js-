@@ -25,7 +25,7 @@ export default function Ci_payout({ department }) {
 
     useEffect(() => {
         if (!data_19 && department) fetchData_19(department)
-    }, [department])
+    }, [department, data_19, fetchData_19])
 
     const getColumnFilters = (dataIndex) => {
         if (!data_19) return []

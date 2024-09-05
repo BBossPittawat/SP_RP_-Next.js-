@@ -25,7 +25,11 @@ export async function POST(req) {
       `
       SELECT
           T1.ROWID,
-          T1.IMG,
+          CASE WHEN T1.IMG IS NOT NULL THEN
+              '1'
+          ELSE
+              NULL
+          END AS IMG,
           T1.PART_NO,
           T1.SPEC,
           T1.PRICE,
@@ -41,10 +45,10 @@ export async function POST(req) {
           T2.DPM,
           T1.ID,
           T1.REMARK,
-          TO_CHAR(T5.ORDERDTE, 'DD-MON-YY') AS ORDERDTE,
-          TO_CHAR(T5.PDDT, 'DD-MON-YY') AS PDDT,
-          T5.PDQTY,
-          T5.VNDNAME,
+          T1.BL_ORDERDTE,
+          T1.BL_PDDT,
+          T1.BL_PDQTY,
+          T1.BL_VNDNAME,
           T1.OP,
           T1.OQ
       FROM 
@@ -64,8 +68,6 @@ export async function POST(req) {
       ) Q ON Q.PART_ID = T1.ID
       JOIN
           F17_00_COMMON_CCC T4 ON T4.ID = T2.CCC_ID
-      LEFT JOIN 
-          MATERIALBACKLOG@MTLE T5 ON T4.CCC_NAME = T5.CCC AND T1.PART_NO = T5.PARTNO
       WHERE 
         T1.ID = :id
       `

@@ -19,7 +19,7 @@ export default function Admin({ department }) {
 
     useEffect(() => {
         if (!data_22 && department) fetchData_22(department)
-    }, [department])
+    }, [data_22, department, fetchData_22])
 
     const columns = [
         {

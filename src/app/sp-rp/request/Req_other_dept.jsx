@@ -50,7 +50,7 @@ export default function Req_mn({ data, fetchData_10 }) {
             fetchIndirect(dept)
             fetchMnCodes()
         }
-    }, [jwtData])
+    }, [errorJWT, jwtData, router, fetchProducts, fetchIndirect, fetchMnCodes])
 
     const onMnCodeChange = (e) => {
         const [id, acc] = e.target.value.split('|')

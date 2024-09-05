@@ -53,7 +53,7 @@ export default function Req_mn({ data, fetchData_10 }) {
             fetchIndirect(dept)
             fetchMnCodes()
         }
-    }, [jwtData])
+    }, [errorJWT, jwtData, router, fetchProducts, fetchIndirect, fetchMnCodes])
 
     const onProductChange = (e) => {
         const [product, ccc] = e.target.value.split('|')
@@ -207,7 +207,7 @@ export default function Req_mn({ data, fetchData_10 }) {
                             <select onChange={onProductChange} className="select select-bordered w-full mt-3">
                                 <option disabled selected value="">Product (พื้นที่การผลิตที่จะนำไปใช้งาน)</option>
                                 {productsData && productsData.map((item) => (
-                                    <option key={item.id} value={`${item.id}|${item.ccc}`}>{item.product}</option>
+                                    <option key={item.id} value={`${item.id}|${item.ccc}`}>{item.product} &nbsp; ( {item.ccc} ) </option>
                                 ))}
                             </select>
 

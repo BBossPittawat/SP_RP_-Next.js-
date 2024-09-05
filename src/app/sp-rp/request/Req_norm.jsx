@@ -53,7 +53,7 @@ export default function Req_norm({ data, fetchData_10 }) {
             fetchIndirect(dept)
             fetchMnCodes()
         }
-    }, [jwtData])
+    }, [errorJWT, jwtData, router, fetchProducts, fetchIndirect, fetchMnCodes])
 
     const onProductChange = (e) => {
         const [product, ccc] = e.target.value.split('|')

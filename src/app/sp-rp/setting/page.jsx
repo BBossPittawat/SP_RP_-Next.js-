@@ -41,8 +41,7 @@ export default function Page() {
         if (!data_4) {
             fetchData_4()
         }
-
-    }, [data_8])
+    }, [data_8, data_4, fetchData_4])
 
     useEffect(() => {
         if (data_4 && data_4.payload && !error_4) {

@@ -5,6 +5,7 @@ import { TextField, Autocomplete } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import useStore from '@/lib/store'
+import Image from 'next/image'
 
 export default function Navbar() {
     const router = useRouter()
@@ -22,21 +23,21 @@ export default function Navbar() {
 
     useEffect(() => {
         if (!data_4) fetchData_4()
-    }, [fetchData_4])
+    }, [fetchData_4, data_4])
 
     useEffect(() => {
         if (data_4) {
             const department = data_4?.payload?.department
             if (department) fetchData_38(department)
         }
-    }, [data_4])
+    }, [data_4, fetchData_38])
 
     useEffect(() => {
         if (error_4 || (data_4 && !data_4.payload?.name)) {
             router.push('/sp-rp')
             window.location.reload()
         }
-    }, [error_4, data_4])
+    }, [error_4, data_4, router])
 
     useEffect(() => {
         setFilteredOptions(data_38 || [])
@@ -51,10 +52,14 @@ export default function Navbar() {
         }
     }
 
-    const handleSearchChange = (event, value) => {
+    const handleSearchChange = (_, value) => {
         setSearchValue(value)
         if (!value) setFilteredOptions(data_38)
-        else setFilteredOptions(data_38.filter(item => item.PART_NO.includes(value)))
+        else {
+            setFilteredOptions(data_38.filter(item =>
+                item.PART_NO.includes(value) || item.SPEC.includes(value)
+            ))
+        }
     }
 
     const handleCardClick = (ID) => {
@@ -62,10 +67,11 @@ export default function Navbar() {
         else console.error('Invalid ID')
     }
 
+
     return (
         <nav className="navbar py-1 bg-blue-400 text-black flex justify-between items-center pr-5">
             <div className="flex items-center">
-                <img src="/Image/sr-rp-icon.svg" alt="icon" width={40} height={40} className="mx-3" />
+                <Image src="/Image/sr-rp-icon.svg" alt="icon" width={40} height={40} className="mx-3" />
                 <a className="btn btn-ghost text-3xl font-bold text-white" onClick={() => router.push('/sp-rp/items')}>
                     SP-RP
                 </a>
@@ -74,8 +80,10 @@ export default function Navbar() {
             <Autocomplete
                 freeSolo
                 options={filteredOptions.map(option => ({
-                    label: `${option.CCC} : ${option.PART_NO}`,
-                    ID: option.ID
+                    label: `${option?.CCC} : ${option?.PART_NO} ( ${option?.SPEC} )`,
+                    ID: option.ID,
+                    PART_NO: option.PART_NO,
+                    SPEC: option.SPEC
                 }))}
                 value={searchValue}
                 onInputChange={handleSearchChange}
@@ -105,7 +113,8 @@ export default function Navbar() {
                 )}
                 filterOptions={(options, state) =>
                     options.filter(option =>
-                        option.label.split(' : ')[1].includes(state.inputValue)
+                        option.label.split(' : ')[1].split('  (')[0].includes(state.inputValue)
+                        || option.label.split(' (')[1].replace(')', '').includes(state.inputValue)
                     )
                 }
             />
