@@ -1,13 +1,16 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { TextField, Autocomplete } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import useStore from '@/lib/store'
 import Image from 'next/image'
+import useDeviceScale from './useDeviceScale'
 
 export default function Navbar() {
+
+    const zoomLevel = useDeviceScale()
+
     const router = useRouter()
     const [filteredOptions, setFilteredOptions] = useState([])
     const [searchValue, setSearchValue] = useState('')
@@ -69,7 +72,7 @@ export default function Navbar() {
 
 
     return (
-        <nav className="navbar py-1 bg-blue-400 text-black flex justify-between items-center pr-5">
+        <nav style={{ zoom: zoomLevel }} className="navbar py-1 bg-blue-400 text-black flex justify-between items-center pr-5">
             <div className="flex items-center">
                 <Image src="/Image/sr-rp-icon.svg" alt="icon" width={40} height={40} className="mx-3" />
                 <a className="btn btn-ghost text-3xl font-bold text-white" onClick={() => router.push('/sp-rp/items')}>
@@ -91,7 +94,7 @@ export default function Navbar() {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        placeholder="Search Part no."
+                        placeholder="Search PART NO. or SPEC"
                         variant="outlined"
                         style={{
                             width: '900px',

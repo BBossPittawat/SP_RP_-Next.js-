@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { MT200conn } from '@/../utils/mt200DB'
-import { mteDBconn } from '@/../utils/mteDB'
 import { spiritDBconn } from '@/../utils/spiritDB'
 
 export const dynamic = 'force-dynamic'
@@ -164,7 +163,7 @@ export async function POST(req) {
             INSERT INTO F17_05_SPRP_PART_LIST (
               CCC_ID, PART_NO, SPEC, PRICE, CURR, UNIT, STOCK , OP , OQ
             ) VALUES (
-              :CCC_ID, :PART_NO, :SPEC, :PRICE, :CURR, :UNIT, :STOCK , :OP , :OQ
+              :CCC_ID, :PART_NO, :SPEC, :PRICE, 'THB', :UNIT, :STOCK , :OP , :OQ
             )
             `,
           [
@@ -172,7 +171,7 @@ export async function POST(req) {
             item.PART_NO,
             item.SPEC,
             item.PRICE,
-            item.CURR,
+            // item.CURR,
             item.UNIT,
             item.STOCK,
             item.OP,
@@ -187,13 +186,15 @@ export async function POST(req) {
             UPDATE F17_05_SPRP_PART_LIST
             SET STOCK = :STOCK,
                 OP = :OP,
-                OQ = :OQ
+                OQ = :OQ,
+                PRICE = :PRICE
             WHERE CCC_ID=:CCC_ID 
             AND PART_NO=:PART_NO
             `,
           [item.STOCK.toFixed(2),
           item.OP,
           item.OQ,
+          item.PRICE,
           item.CCC_ID.toFixed(2),
           item.PART_NO]
         )

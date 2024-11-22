@@ -23,9 +23,9 @@ export async function POST(req) {
 
         const conn1 = await MT200conn()
         await conn1.execute(`
-
         UPDATE F17_05_SPRP_REQ_HIS
-        SET ADMIN_JDM_STATUS = :jdm_status
+        SET ADMIN_JDM_STATUS = :jdm_status,
+            ADMIN_JDM_DTE = SYSTIMESTAMP
         WHERE ID = :id
         `
             , {

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Card, Image, Badge, Spin, Pagination, Alert } from 'antd'
+import { Card, Image, Badge, Spin, Pagination, Alert, DatePicker } from 'antd'
 import Navbar from '@/components/Navbar'
 import Sidebar from './Sidebar'
 import useStore from '@/lib/store'
@@ -20,6 +20,7 @@ export default function Page() {
 
   const handleSearch = async (searchParams) => {
     await fetchData_8(searchParams)
+    setCurrentPage(1)
   }
 
   useEffect(() => {
@@ -54,6 +55,10 @@ export default function Page() {
   const startIndex = (currentPage - 1) * pageSize
   const currentCards = filteredResults.slice(startIndex, startIndex + pageSize)
 
+  const export_clicked = () => {
+
+  }
+
   return (
     <>
       <Navbar />
@@ -68,41 +73,26 @@ export default function Page() {
                 <div>a - z</div>
               </button>
 
-              {/* {searchResults.some(result => result.BL_ORDERDTE) && (
-                <button
-                  className={`btn btn-sm text-xs block ${isBacklogFiltered ? 'bg-blue-200 text-gray-600' : 'bg-white text-gray-500'}`}
-                  onClick={() => setIsBacklogFiltered(prev => !prev)}
-                >
-                  <div>backlog</div>
-                </button>
-              )} */}
             </div>
 
-            <button className="btn" onClick={() => document.getElementById('my_modal_1').showModal()}>open modal</button>
-            <dialog id="my_modal_1" className="modal">
-              <div className="modal-box">
-                <h3 className="font-bold text-lg">Hello!</h3>
-                <p className="py-4">Press ESC key or click the button below to close</p>
-                <div className="modal-action">
-                  <form method="dialog">
-                    {/* if there is a button in form, it will close the modal */}
-                    <button className="btn">Close</button>
-                  </form>
-                </div>
-              </div>
-            </dialog>
+            <div className="flex items-center space-x-2">
 
-            <button
-              type="button"
-              className="btn btn-sm btn-info"
-              onClick={monitorPageClick}
-            >
+              <button
+                className="btn btn-sm btn-neutral"
+                onClick={() => window.open('https://app.powerbi.com/reportEmbed?reportId=88886aa4-9eba-471b-bfb5-77dd9103d78b&autoAuth=true&ctid=afff1096-7fd8-4cdd-879a-7db50a47287a', '_blank')}
+              >
+                History
+              </button>
 
-              <MonitorOutlined />
-              Monitoring
-            </button>
-
-
+              <button
+                type="button"
+                className="btn btn-sm btn-info"
+                onClick={monitorPageClick}
+              >
+                <MonitorOutlined />
+                Monitoring
+              </button>
+            </div>
 
           </div>
 

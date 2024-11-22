@@ -1,10 +1,14 @@
 'use client'
 import Image from "next/image"
+import useDeviceScale from "@/components/useDeviceScale"
 
 export default function Navbar() {
+
+    const zoomLevel = useDeviceScale()
+
     return (
         <nav>
-            <div className="navbar bg-custom-gray text-black">
+            <div style={{ zoom: zoomLevel }} className="navbar bg-custom-gray text-black">
 
                 <Image src="/Image/sr-rp-icon.svg" alt="icon" width={40} height={40} className="mx-3" />
 

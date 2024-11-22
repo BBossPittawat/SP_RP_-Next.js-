@@ -165,15 +165,12 @@ export default function Req_norm({ data, fetchData_10 }) {
                 break
 
             case "MT250":
-                ccc = "2550"
+                ccc = "6650"
                 break
 
             case "MT260":
                 ccc = "2560"
-                break
-
-            case "MT270":
-                ccc = "2570"
+                //  เพิ่ม DDL ให้เลือกว่าอยู๋สังกัดไหนระหว่าง 86TK กับ 86KC
                 break
 
             case "MT2C0":
@@ -311,10 +308,17 @@ export default function Req_norm({ data, fetchData_10 }) {
 
                             <select value={selectedMnCode ? `${selectedMnCode}|${selectedMnAcc}` : ''} onChange={onMnCodeChange} className="select select-bordered w-full mt-3">
                                 <option value='' disabled selected>M/N Code</option>
-                                {mnCodeData && mnCodeData.map((mn) => (
+                                {mnCodeData && mnCodeData.slice(4, 5).map((mn) => (
                                     <option key={mn.ID} value={`${mn.ID}|${mn.ACC}`}>{mn.MN_CODE} [ {mn.MEAN_TH} ]</option>
                                 ))}
                             </select>
+
+                            {/* <select value={selectedMnCode ? `${selectedMnCode}|${selectedMnAcc}` : ''} onChange={onMnCodeChange} className="select select-bordered w-full mt-3">
+                                <option value='' disabled selected>M/N Code</option>
+                                {mnCodeData && mnCodeData.map((mn) => (
+                                    <option key={mn.ID} value={`${mn.ID}|${mn.ACC}`}>{mn.MN_CODE} [ {mn.MEAN_TH} ]</option>
+                                ))}
+                            </select> */}
 
                             <input
                                 type="number"

@@ -84,7 +84,7 @@ export default function Page() {
                                     <Select
                                         className="mt-10"
                                         style={{ width: '83%', height: '10%' }}
-                                        placeholder="Select a Department"
+                                        placeholder="Select spare part department"
                                         // value={department}
                                         onChange={(value) => setDepartment(value)}
                                         disabled={SubmitLoading}

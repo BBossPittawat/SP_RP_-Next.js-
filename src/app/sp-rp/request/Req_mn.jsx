@@ -224,7 +224,7 @@ export default function Req_mn({ data, fetchData_10 }) {
 
                             <select value={selectedMnCode ? `${selectedMnCode}|${selectedMnAcc}` : ''} onChange={onMnCodeChange} className="select select-bordered w-full mt-3">
                                 <option value='' disabled selected>M/N Code</option>
-                                {mnCodeData && mnCodeData.map((mn) => (
+                                {mnCodeData && mnCodeData.slice(0, 3).map((mn) => (
                                     <option key={mn.ID} value={`${mn.ID}|${mn.ACC}`}>{mn.MN_CODE} [ {mn.MEAN_TH} ]</option>
                                 ))}
                             </select>
@@ -294,7 +294,7 @@ export default function Req_mn({ data, fetchData_10 }) {
 
                             <select value={selectedMnCode ? `${selectedMnCode}|${selectedMnAcc}` : ''} onChange={onMnCodeChange} className="select select-bordered w-full mt-3">
                                 <option value='' disabled selected>M/N Code</option>
-                                {mnCodeData && mnCodeData.map((mn) => (
+                                {mnCodeData && mnCodeData.slice(4, 5).map((mn) => (
                                     <option key={mn.ID} value={`${mn.ID}|${mn.ACC}`}>{mn.MN_CODE} [ {mn.MEAN_TH} ]</option>
                                 ))}
                             </select>
