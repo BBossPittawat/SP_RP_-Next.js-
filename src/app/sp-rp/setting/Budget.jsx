@@ -182,7 +182,7 @@ export default function Budget({ department }) {
         if (Object.values(formData).every(value => value !== null && value !== '')) {
             setShowError(false)
 
-            console.log(formData)
+            // console.log(formData)
 
             await fetchData_31({
                 period: formData.PERIOD,

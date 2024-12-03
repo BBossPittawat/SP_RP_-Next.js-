@@ -16,6 +16,7 @@ export default function Req_norm({ data, fetchData_10 }) {
     const [remark, setRemark] = useState('')
     const part_id = data[0].ID
     const [formSubmitted, setFormSubmitted] = useState(false)
+    const [selectedCccOfSection, setselectedCccOfSection] = useState('')
 
     const router = useRouter()
     const {
@@ -147,6 +148,14 @@ export default function Req_norm({ data, fetchData_10 }) {
         let section = jwtData.payload.section
         let ccc
 
+        if (section === 'MT260') {
+            if (!selectedCccOfSection) {
+                setErrorMessage("กรุณากรอกข้อมูลให้ครบถ้วน")
+                setSubmitLoading(false)
+                return
+            }
+        }
+
         switch (section) {
             case "MT210":
                 ccc = "2510"
@@ -169,8 +178,7 @@ export default function Req_norm({ data, fetchData_10 }) {
                 break
 
             case "MT260":
-                ccc = "2560"
-                //  เพิ่ม DDL ให้เลือกว่าอยู๋สังกัดไหนระหว่าง 86TK กับ 86KC
+                ccc = selectedCccOfSection
                 break
 
             case "MT2C0":
@@ -313,12 +321,15 @@ export default function Req_norm({ data, fetchData_10 }) {
                                 ))}
                             </select>
 
-                            {/* <select value={selectedMnCode ? `${selectedMnCode}|${selectedMnAcc}` : ''} onChange={onMnCodeChange} className="select select-bordered w-full mt-3">
-                                <option value='' disabled selected>M/N Code</option>
-                                {mnCodeData && mnCodeData.map((mn) => (
-                                    <option key={mn.ID} value={`${mn.ID}|${mn.ACC}`}>{mn.MN_CODE} [ {mn.MEAN_TH} ]</option>
-                                ))}
-                            </select> */}
+                            {jwtData?.payload?.section === 'MT250' || 'MT260' && (
+                                <select className="select select-bordered mt-3 w-full"
+                                    onChange={(e) => setselectedCccOfSection(e.target.value)}
+                                >
+                                    <option disabled selected>เลือกสังกัด product ที่คุณรับผิดชอบ</option>
+                                    <option value='86TK'>86TK</option>
+                                    <option value='86KC'>86KC</option>
+                                </select>
+                            )}
 
                             <input
                                 type="number"

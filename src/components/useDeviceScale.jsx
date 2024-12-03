@@ -7,7 +7,7 @@ export default function useDeviceScale() {
 
     useEffect(() => {
         const devicePixelRatio = window.devicePixelRatio
-        console.log(devicePixelRatio)
+        // console.log(devicePixelRatio)
         if (devicePixelRatio === 1.25) {
             setZoomLevel(1)
             // console.log(setZoomLevel)

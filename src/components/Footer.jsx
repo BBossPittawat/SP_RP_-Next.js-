@@ -6,7 +6,7 @@ export default function Footer() {
 
       <footer className="footer footer-center p-4 text-gray-500">
         <aside>
-          <p>MT200 DX TEAM V.1.3.20</p>
+          <p>MT200 DX TEAM {process.env.NEXT_PUBLIC_VERSION}</p>
         </aside>
       </footer>
 

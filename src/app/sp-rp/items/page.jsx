@@ -123,7 +123,7 @@ export default function Page() {
                     {!!result.BL_ORDERDTE ? (
                       <Badge.Ribbon text="Backlog" color="#FFB200" >
                         <Card
-                          className="shadow-xl "
+                          className="shadow-xl"
                           cover={
                             result.IMG_URL ? (
                               <Image
